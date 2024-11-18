@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Simple Music"
 include(":app")
- 
+include(":sm-data")
+include(":sm-domain")

@@ -96,6 +96,10 @@ android {
 }
 
 dependencies {
+    // simple-music core modules
+    implementation(project(":sm-domain"))
+    implementation(project(":sm-data"))
+
     // simple-touch ui
     implementation ("com.github.josephdinhtan.android-core-architecture-lite:simpletouch-ui:1.0.0")
     implementation ("com.github.josephdinhtan.android-core-architecture-lite:simpletouch-utils:1.0.0")
