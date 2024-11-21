@@ -1,19 +1,21 @@
 package com.jddev.simplemusic.ui.track
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.jddev.simplemusic.domain.repository.MusicControllerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TrackViewModel @Inject constructor (
     private val musicControllerRepository: MusicControllerRepository,
 ): ViewModel() {
+    val currentTrack = musicControllerRepository.currentTrack
+    val playerState = musicControllerRepository.playerState
+    val currentPosition = musicControllerRepository.currentPosition
+    val totalDuration = musicControllerRepository.totalDuration
+
     fun pause() {
-        musicControllerRepository.pause()
+        musicControllerRepository.pauseCurrentTrack()
     }
 
     fun skipToNext() {
@@ -21,7 +23,7 @@ class TrackViewModel @Inject constructor (
     }
 
     fun resume() {
-        musicControllerRepository.resume()
+        musicControllerRepository.resumeCurrentTrack()
     }
 
     fun skipToPrevious() {
@@ -34,19 +36,6 @@ class TrackViewModel @Inject constructor (
     }
 
     fun seekTrackToPosition(position: Long) {
-        musicControllerRepository.seekTo(position)
-    }
-
-    val playerState = musicControllerRepository.playerState
-    val currentPosition = musicControllerRepository.currentPosition
-    val totalDuration = musicControllerRepository.totalDuration
-
-    init {
-        viewModelScope.launch {
-            delay(3000)
-
-            musicControllerRepository.addMediaItems(listOf())
-            musicControllerRepository.play(0)
-        }
+        musicControllerRepository.seekCurrentTrackTo(position)
     }
 }

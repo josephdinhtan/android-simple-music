@@ -13,47 +13,65 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlipCameraAndroid
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jddev.simplemusic.domain.model.Track
+import androidx.compose.ui.unit.sp
 import com.jddev.simplemusic.domain.model.PlayerState
-import com.jddev.simplemusic.ui.components.TrackBottomController
+import com.jddev.simplemusic.domain.model.Track
+import com.jddev.simplemusic.ui.components.TrackBottomBar
+import com.jddev.simplemusic.ui.components.TrackEvent
 import com.jddev.simpletouch.ui.component.StUiTopAppBar
 import com.jddev.simpletouch.ui.theme.StUiTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import kotlin.math.absoluteValue
 
-private val musicCategory = listOf(
-    HomeFragmentItem("Spotify", content = { Text("Spotify") }),
+private val musicCategory = mutableListOf(
+    HomeFragmentItem("Tracks", content = { Text("Tracks") }),
     HomeFragmentItem("Favorites", content = { Text("Favorites") }),
     HomeFragmentItem("Playlists", content = { Text("Playlists") }),
     HomeFragmentItem("Artists", content = { Text("Artists") }),
     HomeFragmentItem("Albums", content = { Text("Albums") }),
     HomeFragmentItem("Genres", content = { Text("Genres") }),
-    HomeFragmentItem("Tracks", content = { Text("Tracks") })
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    currentTrack: Track? = null,
+    playerState: PlayerState,
+    allTracks: List<Track>,
+    onTrackEvent: (TrackEvent) -> Unit,
     navigateToSettings: () -> Unit,
-    onShowTrackScreen: (trackId: String) -> Unit,
+    onTrackSelected: (Track) -> Unit,
+    onShowTrackFullScreen: () -> Unit,
+    requestScanDevice: () -> Unit,
 ) {
+    musicCategory[0] = HomeFragmentItem("Tracks", content = {
+        AllTracksContent(
+            modifier = Modifier.fillMaxSize(),
+            tracks = allTracks,
+            onTrackSelected = onTrackSelected,
+        )
+    })
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -61,7 +79,10 @@ fun HomeScreen(
                 modifier = modifier,
                 title = "Simple Music",
                 actions = {
-                    IconButton(onClick = navigateToSettings) {
+                    IconButton(onClick = requestScanDevice) {
+                        Icon(Icons.Default.FlipCameraAndroid, "reload")
+                    }
+                    IconButton(onClick = {}) {
                         Icon(Icons.Outlined.Search, "Search")
                     }
                     IconButton(onClick = navigateToSettings) {
@@ -76,20 +97,16 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize(),
                 contents = musicCategory
             )
-            TrackBottomController(
+            TrackBottomBar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp),
-                onEvent = {},
-                playerState = PlayerState.PLAYING,
-                track = Track(
-                    title = "Title",
-                    subtitle = "Subtitle",
-                    imageUrl = "",
-                    trackUrl = "",
-                    mediaId = "0"
-                ),
-                onBarClick = onShowTrackScreen
+                onTrackEvent = onTrackEvent,
+                playerState = playerState,
+                track = currentTrack,
+                onBarClick = {
+                    onShowTrackFullScreen()
+                }
             )
         }
     }
@@ -152,13 +169,18 @@ private fun HomeContent(
             flingBehavior = fling,
             snapPosition = SnapPosition.Start
         ) { page ->
-            OutlinedButton(onClick = {
+            val pageOffset = firstPagerState.getOffsetDistanceInPages(page).absoluteValue
+            Timber.d("page $page: pageOffset $pageOffset")
+            var fontSize = (20.sp * (1 - pageOffset))
+            if(fontSize < 12.sp) fontSize = 12.sp
+            TextButton(onClick = {
                 coroutineScope.launch {
                     firstPagerState.animateScrollToPage(page)
                 }
             }) {
                 Text(
                     text = contents[page].title,
+                    style = TextStyle(fontSize = fontSize)
                 )
             }
         }
@@ -172,7 +194,6 @@ private fun HomeContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Page:")
                 contents[page].content()
             }
         }
@@ -184,8 +205,14 @@ private fun HomeContent(
 private fun Preview() {
     StUiTheme {
         HomeScreen(
-            modifier = Modifier,
-            {}, {}
+            playerState = PlayerState.PLAYING,
+            currentTrack = Track("id", "title", "subtitle", "trackUrl"),
+            allTracks = listOf(),
+            onTrackEvent = {},
+            navigateToSettings = {},
+            onTrackSelected = {},
+            onShowTrackFullScreen = {},
+            requestScanDevice = {}
         )
     }
 }

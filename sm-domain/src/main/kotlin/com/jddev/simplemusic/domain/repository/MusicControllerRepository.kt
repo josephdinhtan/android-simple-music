@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface MusicControllerRepository {
 
+    val currentTrack: StateFlow<Track?>
+    val isReady: StateFlow<Boolean>
+
     val playerState: StateFlow<PlayerState>
-    val currentMusic: StateFlow<Track?>
     val currentPosition: StateFlow<Long>
     val totalDuration: StateFlow<Long>
     val isShuffleEnabled: StateFlow<Boolean>
@@ -15,21 +17,19 @@ interface MusicControllerRepository {
 
     fun addMediaItems(tracks: List<Track>)
 
-    fun play(mediaItemIndex: Int)
+    fun play(mediaId: String)
 
-    fun resume()
+    fun getCurrentTrack(): Track?
 
-    fun pause()
+    fun resumeCurrentTrack()
 
-    fun getCurrentPosition(): Long?
-
-    fun destroy()
+    fun pauseCurrentTrack()
 
     fun skipToNextTrack()
 
     fun skipToPreviousTrack()
 
-    fun getCurrentTrack(): Track?
+    fun seekCurrentTrackTo(position: Long)
 
-    fun seekTo(position: Long)
+    fun destroy()
 }

@@ -24,8 +24,8 @@ class MainNavigationActions(navController: NavHostController) {
             restoreState = true
         }
     }
-    val navigateToTrack: (trackId: String) -> Unit =  { trackId ->
-        navController.navigate(MainNavigation.Track.createRoute(trackId)) {
+    val navigateToTrack: () -> Unit =  {
+        navController.navigate(MainNavigation.Track.createRoute("TrackId")) {
             launchSingleTop = true
             restoreState = true
         }

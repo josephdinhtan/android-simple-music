@@ -38,34 +38,31 @@ import com.jddev.simplemusic.domain.model.Track
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
-fun TrackBottomController(
+fun TrackBottomBar(
     modifier: Modifier = Modifier,
-    onEvent: (TrackEvent) -> Unit,
+    onTrackEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
     track: Track?,
-    onBarClick: (trackId: String) -> Unit
+    onBarClick: () -> Unit
 ) {
-
     var offsetX by remember { mutableFloatStateOf(0f) }
-
     AnimatedVisibility(
-        visible = playerState != PlayerState.NONE, modifier = modifier
+        visible = track != null, modifier = modifier
     ) {
         if (track != null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .clickable(onClick = { onBarClick() })
                     .clip(shape = MaterialTheme.shapes.medium)
                     .pointerInput(Unit) {
                         detectDragGestures(onDragEnd = {
                             when {
                                 offsetX > 0 -> {
-                                    onEvent(TrackEvent.SkipToPrevious)
+                                    onTrackEvent(TrackEvent.SkipToPrevious)
                                 }
 
                                 offsetX < 0 -> {
-                                    onEvent(TrackEvent.SkipToNext)
+                                    onTrackEvent(TrackEvent.SkipToNext)
                                 }
                             }
                         }, onDrag = { change, dragAmount ->
@@ -79,13 +76,13 @@ fun TrackBottomController(
                         if (!isSystemInDarkTheme()) {
                             Color.LightGray
                         } else Color.DarkGray
-                    ),
+                    )
+                    .clickable(onClick = { onBarClick() }),
             ) {
                 TrackBottomControllerContent(
                     track = track,
-                    onEvent = onEvent,
+                    onEvent = onTrackEvent,
                     playerState = playerState,
-                    onBarClick = onBarClick
                 )
             }
         }
@@ -98,31 +95,22 @@ private fun TrackBottomControllerContent(
     track: Track,
     onEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
-    onBarClick: (trackId: String) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { onBarClick(track.mediaId) })
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Image(
-//                painter = rememberAsyncImagePainter(song.imageUrl),
-            painter = painterResource(id = R.drawable.song_img),
-            contentDescription = track.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .padding(8.dp)
-                .size(48.dp)
-                .clip(shape = MaterialTheme.shapes.medium)
-        )
+        if (track.thumbnailBitmap != null)
+            ThumbnailImage(modifier = Modifier.padding(8.dp), imageBitmap = track.thumbnailBitmap!!)
+        else
+            ThumbnailImage(modifier = Modifier.padding(8.dp))
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 8.dp, horizontal = 32.dp),
+                .padding(vertical = 8.dp, horizontal = 8.dp),
         ) {
             Text(
                 track.title,
@@ -175,11 +163,11 @@ private fun TrackBottomControllerContent(
 @Preview
 private fun Preview() {
     StUiPreview(modifier = Modifier.background(Color.Green.copy(alpha = 0.3f))) {
-        TrackBottomController(modifier = Modifier.padding(16.dp),
-            onEvent = {},
+        TrackBottomBar(modifier = Modifier.padding(16.dp),
+            onTrackEvent = {},
             playerState = PlayerState.PLAYING,
             track = Track(
-                title = "Title", subtitle = "Subtitle", imageUrl = "", trackUrl = "", mediaId = "0"
+                title = "Title", subtitle = "Subtitle", trackUrl = "", id = "0"
             ),
             onBarClick = {})
     }

@@ -1,8 +1,14 @@
 package com.jddev.simplemusic.data.di
 
 import android.content.Context
+import com.jddev.simplemusic.data.repository.AppDataRepositoryImpl
+import com.jddev.simplemusic.data.repository.DeviceRepositoryImpl
 import com.jddev.simplemusic.data.repository.MusicControllerRepositoryImpl
+import com.jddev.simplemusic.data.repository.SettingsRepositoryImpl
+import com.jddev.simplemusic.domain.repository.AppDataRepository
+import com.jddev.simplemusic.domain.repository.DeviceRepository
 import com.jddev.simplemusic.domain.repository.MusicControllerRepository
+import com.jddev.simplemusic.domain.repository.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,4 +24,19 @@ object RepositoryModule {
     @Provides
     fun provideMusicController(@ApplicationContext context: Context): MusicControllerRepository =
         MusicControllerRepositoryImpl(context)
+
+    @Singleton
+    @Provides
+    fun provideDeviceRepository(@ApplicationContext context: Context): DeviceRepository =
+        DeviceRepositoryImpl(context)
+
+    @Singleton
+    @Provides
+    fun provideAppDataRepository(@ApplicationContext context: Context): AppDataRepository =
+        AppDataRepositoryImpl()
+
+    @Singleton
+    @Provides
+    fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepository =
+        SettingsRepositoryImpl()
 }

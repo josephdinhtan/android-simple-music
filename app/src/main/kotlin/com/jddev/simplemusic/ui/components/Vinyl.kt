@@ -1,5 +1,6 @@
 package com.jddev.simplemusic.ui.components
 
+import android.graphics.Bitmap
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -10,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
@@ -35,7 +38,7 @@ import com.jddev.simplemusic.R
 
 @Composable
 fun AnimatedVinyl(
-    modifier: Modifier = Modifier, isTrackPlaying: Boolean = true, painter: Painter
+    modifier: Modifier = Modifier, isTrackPlaying: Boolean = true, bitmap: Bitmap?, painter: Painter
 ) {
     var currentRotation by remember {
         mutableFloatStateOf(0f)
@@ -45,13 +48,14 @@ fun AnimatedVinyl(
         Animatable(currentRotation)
     }
 
-    val rotationTween = 8000
+    val rotationTween = 20000
 
     LaunchedEffect(isTrackPlaying) {
         if (isTrackPlaying) {
             rotation.animateTo(
                 targetValue = currentRotation + 360f, animationSpec = infiniteRepeatable(
-                    animation = tween(rotationTween, easing = LinearEasing), repeatMode = RepeatMode.Restart
+                    animation = tween(rotationTween, easing = LinearEasing),
+                    repeatMode = RepeatMode.Restart
                 )
             ) {
                 currentRotation = value
@@ -59,8 +63,8 @@ fun AnimatedVinyl(
         } else {
             if (currentRotation > 0f) {
                 rotation.animateTo(
-                    targetValue = currentRotation + 20, animationSpec = tween(
-                        rotationTween/4, easing = LinearOutSlowInEasing
+                    targetValue = currentRotation + 10, animationSpec = tween(
+                        rotationTween / 10, easing = LinearOutSlowInEasing
                     )
                 ) {
                     currentRotation = value
@@ -69,17 +73,20 @@ fun AnimatedVinyl(
         }
     }
 
-    Vinyl(modifier = modifier, painter = painter, rotationDegrees = rotation.value)
+    Vinyl(modifier = modifier, bitmap = bitmap, painter = painter, rotationDegrees = rotation.value)
 }
 
 @Composable
 private fun Vinyl(
-    modifier: Modifier = Modifier, rotationDegrees: Float = 0f, painter: Painter
+    modifier: Modifier = Modifier,
+    rotationDegrees: Float = 0f,
+    bitmap: Bitmap? = null,
+    painter: Painter
 ) {
     Box(
         modifier = modifier
             .aspectRatio(1.0f)
-            .clip(roundedShape)
+            .clip(CircleShape)
     ) {
         // Vinyl background
         Image(
@@ -91,13 +98,23 @@ private fun Vinyl(
         )
 
         // Vinyl song cover
-        Image(
+        if (bitmap != null) Image(
             modifier = Modifier
                 .fillMaxSize(0.5f)
                 .rotate(rotationDegrees)
                 .aspectRatio(1.0f)
                 .align(Alignment.Center)
-                .clip(roundedShape),
+                .clip(CircleShape),
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = "Track cover"
+        )
+        else Image(
+            modifier = Modifier
+                .fillMaxSize(0.5f)
+                .rotate(rotationDegrees)
+                .aspectRatio(1.0f)
+                .align(Alignment.Center)
+                .clip(CircleShape),
             painter = painter,
             contentDescription = "Track cover"
         )
@@ -106,9 +123,7 @@ private fun Vinyl(
 
 private val roundedShape = object : Shape {
     override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
+        size: Size, layoutDirection: LayoutDirection, density: Density
     ): Outline {
         val p1 = Path().apply {
             addOval(Rect(4f, 3f, size.width - 1, size.height - 1))
@@ -117,10 +132,7 @@ private val roundedShape = object : Shape {
         val p2 = Path().apply {
             addOval(
                 Rect(
-                    thickness,
-                    thickness,
-                    size.width - thickness,
-                    size.height - thickness
+                    thickness, thickness, size.width - thickness, size.height - thickness
                 )
             )
         }
