@@ -13,6 +13,7 @@ import com.jddev.simplemusic.domain.model.Track
 import com.jddev.simplemusic.ui.MusicControllerUiState
 import com.jddev.simplemusic.ui.components.BlurBackgroundImage
 import com.jddev.simplemusic.ui.components.TrackEvent
+import com.jddev.simplemusic.ui.utils.getTestTrack
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
@@ -62,7 +63,7 @@ private fun Preview() {
     StUiPreview {
         TrackScreen(onEvent = {}, musicControllerUiState = MusicControllerUiState(
             playerState = PlayerState.PLAYING,
-            currentTrack = Track("Test Track", "Test Track", "Test single", ""),
+            currentTrack = Track.getTestTrack(),
             currentPosition = 20L,
             totalDuration = 100L,
         ), onBack = {}, onShowMenu = {})
@@ -77,7 +78,7 @@ private fun Preview2() {
     StUiPreview {
         TrackScreen(onEvent = {}, musicControllerUiState = MusicControllerUiState(
             playerState = PlayerState.PLAYING,
-            currentTrack = Track("Test Track", "Test Track", "Test single", ""),
+            currentTrack = Track.getTestTrack(),
             currentPosition = 20L,
             totalDuration = 100L,
         ), onBack = {}, onShowMenu = {})

@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.jddev.simplemusic.AppContainer
-import com.jddev.simplemusic.ui.home.HomeRoute
+import com.jddev.simplemusic.ui.home.navigation.HomeNavGraph
 import com.jddev.simplemusic.ui.settings.SettingsRoute
 import com.jddev.simpletouch.ui.component.StDoubleBackPressToExit
 import com.jddev.simpletouch.ui.component.transition.composableSlideTransition
@@ -28,9 +28,8 @@ fun MainNavGraph(
         composableSlideTransition(
             route = MainNavigation.Home.route,
         ) {
-            HomeRoute(
+            HomeNavGraph (
                 navigateToSettings = navigationActions.navigateToSettings,
-                onShowTrackFullScreen = {},
             )
         }
         composableSlideTransition(

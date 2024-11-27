@@ -10,52 +10,39 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jddev.simplemusic.ui.components.FullScreenBottomSheet
 import com.jddev.simplemusic.ui.components.HomeMenu
 import com.jddev.simplemusic.ui.components.SmBottomSheet
-import com.jddev.simplemusic.ui.track.TrackRoute
+import com.jddev.simplemusic.ui.home.album.AlbumTrackGroup
+import com.jddev.simplemusic.ui.home.artist.ArtistTrackGroup
 
 @Composable
 fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel(),
     navigateToSettings: () -> Unit,
-    onShowTrackFullScreen: () -> Unit,
+    onArtistGroupSelected: (ArtistTrackGroup) -> Unit,
+    onAlbumGroupSelected: (AlbumTrackGroup) -> Unit,
 ) {
-    val allTracks = homeViewModel.tracksLoaded.collectAsState()
+    val allTracks = homeViewModel.allTracks.collectAsState()
     val currentTrack = homeViewModel.currentTrack.collectAsState()
-    val playerState = homeViewModel.playerState.collectAsState()
-    val showTrackFullScreen = homeViewModel.showFullTrackScreen.collectAsState()
+    val artistTracks = homeViewModel.artistTracks.collectAsState()
+    val albumTracks = homeViewModel.albumTracks.collectAsState()
+
     var showBottomSheetMenu by remember { mutableStateOf(false) }
 
     Box {
         HomeScreen(
             allTracks = allTracks.value,
-            currentTrack = currentTrack.value,
-            playerState = playerState.value,
+            artistGroups = artistTracks.value,
+            albumGroups = albumTracks.value,
             navigateToSettings = {
                 showBottomSheetMenu = true
             },
             requestScanDevice = { homeViewModel.scanDevice() },
-            onShowTrackFullScreen = {
-                homeViewModel.onShowTrackFullScreen()
-            },
             onTrackSelected = { track ->
                 homeViewModel.playATrack(track.id)
             },
-            onTrackEvent = { event ->
-                homeViewModel.onTrackEvent(event)
-            }
-        )
-    }
-    if (showTrackFullScreen.value) {
-        FullScreenBottomSheet(
-            onDismissRequest = { homeViewModel.onDismissTrackFullScreen() },
-            content = {
-                TrackRoute(
-                    onBack = { homeViewModel.onDismissTrackFullScreen() },
-                    navigateToSettings = navigateToSettings,
-                )
-            }
+            onArtistGroupSelected = onArtistGroupSelected,
+            onAlbumGroupSelected = onAlbumGroupSelected,
         )
     }
     if (showBottomSheetMenu) {
@@ -68,7 +55,8 @@ fun HomeRoute(
                 navigateToSettings = {
                     showBottomSheetMenu = false
                     navigateToSettings()
-                }
+                },
+                onShowBottomSheetTrackInfo = {}
             )
         }
     }

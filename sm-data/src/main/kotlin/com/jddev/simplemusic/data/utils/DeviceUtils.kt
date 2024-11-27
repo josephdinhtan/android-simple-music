@@ -13,21 +13,23 @@ internal fun getAllAudioFiles(context: Context): List<Track> {
         MediaStore.Audio.Media._ID,
         MediaStore.Audio.Media.TITLE,
         MediaStore.Audio.Media.ARTIST,
-        MediaStore.Audio.Media.DATA
+        MediaStore.Audio.Media.ALBUM,
+        MediaStore.Audio.Media.DATA,
     )
     val cursor = contentResolver.query(uri, projection, null, null, null)
     if (cursor != null) {
         while (cursor.moveToNext()) {
             val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
             val title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE))
-            val artist =
-                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
+            val artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
+            val album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM))
             val data = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
             musicFiles.add(
                 Track(
                     id = id.toString(),
                     title = title,
-                    subtitle = artist,
+                    artist = artist,
+                    album = album,
                     trackUrl = data,
                 )
             )

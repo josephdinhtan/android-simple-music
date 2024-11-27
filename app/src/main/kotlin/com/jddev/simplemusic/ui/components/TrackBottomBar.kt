@@ -3,6 +3,7 @@ package com.jddev.simplemusic.ui.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,9 +12,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.jddev.simplemusic.R
 import com.jddev.simplemusic.domain.model.PlayerState
 import com.jddev.simplemusic.domain.model.Track
+import com.jddev.simplemusic.ui.utils.getTestTrack
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
@@ -53,7 +58,8 @@ fun TrackBottomBar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(shape = MaterialTheme.shapes.medium)
+                    .height(64.dp)
+                    .clip(shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
                     .pointerInput(Unit) {
                         detectDragGestures(onDragEnd = {
                             when {
@@ -79,6 +85,10 @@ fun TrackBottomBar(
                     )
                     .clickable(onClick = { onBarClick() }),
             ) {
+                BlurBackgroundImage(
+                    modifier = Modifier.fillMaxSize(),
+                    imageBitmap = track.thumbnailBitmap
+                )
                 TrackBottomControllerContent(
                     track = track,
                     onEvent = onTrackEvent,
@@ -102,9 +112,9 @@ private fun TrackBottomControllerContent(
         modifier = Modifier.fillMaxWidth()
     ) {
         if (track.thumbnailBitmap != null)
-            ThumbnailImage(modifier = Modifier.padding(8.dp), imageBitmap = track.thumbnailBitmap!!)
+            ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp), imageBitmap = track.thumbnailBitmap!!)
         else
-            ThumbnailImage(modifier = Modifier.padding(8.dp))
+            ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp))
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
@@ -118,14 +128,15 @@ private fun TrackBottomControllerContent(
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth().basicMarquee(),
             )
 
-            Text(track.subtitle,
+            Text(track.artist,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.graphicsLayer {
+                modifier = Modifier.fillMaxWidth().graphicsLayer {
                     alpha = 0.60f
                 })
         }
@@ -163,12 +174,10 @@ private fun TrackBottomControllerContent(
 @Preview
 private fun Preview() {
     StUiPreview(modifier = Modifier.background(Color.Green.copy(alpha = 0.3f))) {
-        TrackBottomBar(modifier = Modifier.padding(16.dp),
+        TrackBottomBar(
             onTrackEvent = {},
             playerState = PlayerState.PLAYING,
-            track = Track(
-                title = "Title", subtitle = "Subtitle", trackUrl = "", id = "0"
-            ),
+            track = Track.getTestTrack(),
             onBarClick = {})
     }
 }

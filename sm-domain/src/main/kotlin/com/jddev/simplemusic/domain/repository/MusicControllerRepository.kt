@@ -19,8 +19,6 @@ interface MusicControllerRepository {
 
     fun play(mediaId: String)
 
-    fun getCurrentTrack(): Track?
-
     fun resumeCurrentTrack()
 
     fun pauseCurrentTrack()

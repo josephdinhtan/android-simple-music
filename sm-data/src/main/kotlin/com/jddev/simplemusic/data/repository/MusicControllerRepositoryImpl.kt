@@ -98,6 +98,7 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 Timber.d("onMediaItemTransition track: ${mediaItem?.toTrack()?.title}")
                 mediaItem?.toTrack()?.let { track ->
+//                    val originalTrack = availableTracks.first { it.id == track.id }
                     _currentTrack.tryEmit(track)
                 }
                 super.onMediaItemTransition(mediaItem, reason)
@@ -146,8 +147,8 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
                 .setMediaMetadata(
                     MediaMetadata.Builder()
                         .setTitle(track.title)
-                        .setSubtitle(track.subtitle)
-                        .setArtist(track.subtitle)
+                        .setSubtitle(track.artist)
+                        .setArtist(track.artist)
                         .build()
                 )
                 .build()
@@ -189,10 +190,6 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
 
     override fun skipToPreviousTrack() {
         mediaController?.seekToPrevious()
-    }
-
-    override fun getCurrentTrack(): Track? {
-        return mediaController?.currentMediaItem?.toTrack()
     }
 
     override fun seekCurrentTrackTo(position: Long) {

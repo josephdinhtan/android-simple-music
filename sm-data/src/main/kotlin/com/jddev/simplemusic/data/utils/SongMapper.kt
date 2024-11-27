@@ -7,6 +7,7 @@ fun MediaItem.toTrack() =
     Track(
         id = mediaId,
         title = mediaMetadata.title.toString(),
-        subtitle = mediaMetadata.subtitle.toString(),
+        artist = mediaMetadata.subtitle.toString(),
+        album = mediaMetadata.albumTitle.toString(),
         trackUrl = mediaId,
     )

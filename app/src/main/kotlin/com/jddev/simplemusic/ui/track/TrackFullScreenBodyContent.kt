@@ -58,6 +58,7 @@ import com.jddev.simplemusic.ui.MusicControllerUiState
 import com.jddev.simplemusic.ui.components.AnimatedVinyl
 import com.jddev.simplemusic.ui.components.LineMusicSlider
 import com.jddev.simplemusic.ui.components.TrackEvent
+import com.jddev.simplemusic.ui.utils.getTestTrack
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
@@ -232,7 +233,7 @@ private fun ControllerPart(
                 color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis
             )
             Text(
-                track.subtitle,
+                track.artist,
                 style = MaterialTheme.typography.titleSmall,
                 color = Color.White,
                 maxLines = 1,
@@ -391,7 +392,7 @@ private fun Preview() {
             TrackFullScreenBodyContent(onEvent = {},
                 musicControllerUiState = MusicControllerUiState(
                     playerState = PlayerState.PLAYING,
-                    currentTrack = Track("Test Track", "Test Track", "Test single", ""),
+                    currentTrack = Track.getTestTrack(),
                     currentPosition = 20L,
                     totalDuration = 100L,
                 ),
@@ -411,7 +412,7 @@ private fun Preview2() {
             TrackFullScreenBodyContent(onEvent = {},
                 musicControllerUiState = MusicControllerUiState(
                     playerState = PlayerState.PLAYING,
-                    currentTrack = Track("Test Track", "Test Track", "Test single", ""),
+                    currentTrack = Track.getTestTrack(),
                     currentPosition = 20L,
                     totalDuration = 100L,
                 ),

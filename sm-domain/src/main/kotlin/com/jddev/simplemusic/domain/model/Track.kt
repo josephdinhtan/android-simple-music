@@ -9,7 +9,8 @@ import kotlinx.coroutines.launch
 data class Track(
     val id: String,
     val title: String,
-    val subtitle: String,
+    val album: String,
+    val artist: String,
     val trackUrl: String,
 ) {
     var thumbnailBitmap: Bitmap? = null
@@ -21,4 +22,6 @@ data class Track(
             }
         }
     }
+
+    companion object
 }

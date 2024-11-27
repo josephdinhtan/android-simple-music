@@ -2,7 +2,6 @@ package com.jddev.simplemusic.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -35,9 +34,7 @@ internal fun BlurBackgroundImage(
     )
     else
         Image(
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(radius = 50.dp),
+            modifier = modifier.blur(radius = 50.dp),
             painter = painterResource(id = R.drawable.song_img),
             contentScale = ContentScale.FillBounds,
             contentDescription = "blur Background"

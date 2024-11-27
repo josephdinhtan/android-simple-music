@@ -13,6 +13,7 @@ import com.jddev.simplemusic.ui.MusicControllerUiState
 import com.jddev.simplemusic.ui.components.HomeMenu
 import com.jddev.simplemusic.ui.components.SmBottomSheet
 import com.jddev.simplemusic.ui.components.TrackEvent
+import com.jddev.simplemusic.ui.components.TrackInfoContent
 
 
 @Composable
@@ -26,6 +27,7 @@ fun TrackRoute(
     val totalDuration = trackViewModel.totalDuration.collectAsState()
     val currentTrack = trackViewModel.currentTrack.collectAsState()
     var showBottomSheetMenu by remember { mutableStateOf(false) }
+    var showBottomSheetTrackInfo by remember { mutableStateOf(false) }
 
     if(currentTrack.value == null) return
 
@@ -63,7 +65,24 @@ fun TrackRoute(
                 navigateToSettings = {
                     showBottomSheetMenu = false
                     navigateToSettings()
+                },
+                onShowBottomSheetTrackInfo = {
+                    if(currentTrack.value != null) {
+                        showBottomSheetMenu = false
+                        showBottomSheetTrackInfo = true
+                    }
                 }
+            )
+        }
+    }
+
+    if (showBottomSheetTrackInfo) {
+        SmBottomSheet(
+            onDismissRequest = { showBottomSheetTrackInfo = false },
+        ) {
+            TrackInfoContent(
+                modifier = Modifier.fillMaxWidth(),
+                track = currentTrack.value!!,
             )
         }
     }
