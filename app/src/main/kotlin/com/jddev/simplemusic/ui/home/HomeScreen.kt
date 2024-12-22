@@ -31,9 +31,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jddev.simplemusic.domain.model.Album
+import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.domain.model.Track
-import com.jddev.simplemusic.ui.home.album.AlbumTrackGroup
-import com.jddev.simplemusic.ui.home.artist.ArtistTrackGroup
 import com.jddev.simplemusic.ui.utils.listui.SmList
 import com.jddev.simplemusic.ui.utils.listui.albumTrackGroupsToSmItemList
 import com.jddev.simplemusic.ui.utils.listui.artistTrackGroupsToSmItemList
@@ -42,7 +42,6 @@ import com.jddev.simpletouch.ui.component.StUiTopAppBar
 import com.jddev.simpletouch.ui.theme.StUiTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.math.absoluteValue
 
 private val musicCategory = mutableListOf(
@@ -59,11 +58,11 @@ private val musicCategory = mutableListOf(
 fun HomeScreen(
     modifier: Modifier = Modifier,
     allTracks: List<Track>,
-    artistGroups: List<ArtistTrackGroup>,
-    albumGroups: List<AlbumTrackGroup>,
+    artists: List<Artist>,
+    albums: List<Album>,
     onTrackSelected: (Track) -> Unit,
-    onArtistGroupSelected: (ArtistTrackGroup) -> Unit,
-    onAlbumGroupSelected: (AlbumTrackGroup) -> Unit,
+    onArtistGroupSelected: (Artist) -> Unit,
+    onAlbumGroupSelected: (Album) -> Unit,
     navigateToSettings: () -> Unit,
     requestScanDevice: () -> Unit,
 ) {
@@ -77,15 +76,15 @@ fun HomeScreen(
     musicCategory[1] = HomeFragmentItem("Artists", content = {
         SmList(
             modifier = Modifier.fillMaxSize(),
-            smListData = artistTrackGroupsToSmItemList(artistGroups),
-            onItemIndexSelected = { index -> onArtistGroupSelected(artistGroups[index]) }
+            smListData = artistTrackGroupsToSmItemList(artists),
+            onItemIndexSelected = { index -> onArtistGroupSelected(artists[index]) }
         )
     })
     musicCategory[2] = HomeFragmentItem("Albums", content = {
         SmList(
             modifier = Modifier.fillMaxSize(),
-            smListData = albumTrackGroupsToSmItemList(albumGroups),
-            onItemIndexSelected = { index -> onAlbumGroupSelected(albumGroups[index]) }
+            smListData = albumTrackGroupsToSmItemList(albums),
+            onItemIndexSelected = { index -> onAlbumGroupSelected(albums[index]) }
         )
     })
     Scaffold(
@@ -175,7 +174,6 @@ private fun HomeContent(
             snapPosition = SnapPosition.Start
         ) { page ->
             val pageOffset = firstPagerState.getOffsetDistanceInPages(page).absoluteValue
-            Timber.d("page $page: pageOffset $pageOffset")
             var fontSize = (20.sp * (1 - pageOffset))
             if (fontSize < 12.sp) fontSize = 12.sp
             TextButton(onClick = {
@@ -214,9 +212,9 @@ private fun Preview() {
             navigateToSettings = {},
             onTrackSelected = {},
             requestScanDevice = {},
-            artistGroups = listOf(),
+            artists = listOf(),
             onArtistGroupSelected = {},
-            albumGroups = listOf(),
+            albums = listOf(),
             onAlbumGroupSelected = {}
         )
     }

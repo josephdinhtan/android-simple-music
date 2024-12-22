@@ -43,7 +43,7 @@ fun HomeMenu(
         Row(
             Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
-            val imageBitmap = track?.thumbnailBitmap
+            val imageBitmap = track?.albumArt
             if (imageBitmap != null) ThumbnailImage(
                 imageBitmap = imageBitmap, modifier = Modifier.padding(16.dp)
             )

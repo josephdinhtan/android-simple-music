@@ -11,7 +11,6 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.jddev.simplemusic.data.service.MusicService
-import com.jddev.simplemusic.data.utils.toTrack
 import com.jddev.simplemusic.domain.model.PlayerState
 import com.jddev.simplemusic.domain.model.Track
 import com.jddev.simplemusic.domain.repository.MusicControllerRepository
@@ -26,7 +25,7 @@ import timber.log.Timber
 
 class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepository {
 
-    private var mediaControllerFuture: ListenableFuture<MediaController>
+    private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private var mediaController: MediaController? = null
 
     private val _currentTrack = MutableStateFlow<Track?>(null)
@@ -55,7 +54,7 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
 
     private val availableTracks = mutableListOf<Track>()
 
-    init {
+    override fun initializer() {
         _isReady.tryEmit(false)
         val sessionToken =
             SessionToken(context, ComponentName(context, MusicService::class.java))
@@ -76,7 +75,7 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
                 Timber.e("onEvents: player $player")
                 with(player) {
                     _playerState.tryEmit(playbackState.toPlayerState(isPlaying))
-                    _currentTrack.tryEmit(currentMediaItem?.toTrack())
+                    _currentTrack.tryEmit(availableTracks.firstOrNull { it.trackUrl == currentMediaItem?.mediaId})
                     _currentPosition.tryEmit(currentPosition)
                     _totalDuration.tryEmit(duration)
                     _isShuffleEnabled.tryEmit(shuffleModeEnabled)
@@ -96,11 +95,9 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
             }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                Timber.d("onMediaItemTransition track: ${mediaItem?.toTrack()?.title}")
-                mediaItem?.toTrack()?.let { track ->
-//                    val originalTrack = availableTracks.first { it.id == track.id }
-                    _currentTrack.tryEmit(track)
-                }
+                val track = availableTracks.firstOrNull { it.trackUrl == mediaItem?.mediaId}
+                Timber.d("onMediaItemTransition track: ${track?.title}")
+                _currentTrack.tryEmit(track)
                 super.onMediaItemTransition(mediaItem, reason)
             }
         })
@@ -157,8 +154,14 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
         mediaController?.prepare()
     }
 
-    override fun play(mediaId: String) {
-        val mediaItemIndex = availableTracks.indexOfFirst { it.id == mediaId }
+    override fun play(mediaId: Long) {
+        if(availableTracks.isEmpty()) {
+            Timber.e("play $mediaId: forget to addMediaItems?")
+            return
+        }
+        val mediaItemIndex = availableTracks.indexOfFirst {
+            it.id == mediaId
+        }
         mediaController?.apply {
             seekToDefaultPosition(mediaItemIndex)
             playWhenReady = true

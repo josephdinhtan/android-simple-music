@@ -10,30 +10,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jddev.simplemusic.domain.model.Album
+import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.ui.components.HomeMenu
 import com.jddev.simplemusic.ui.components.SmBottomSheet
-import com.jddev.simplemusic.ui.home.album.AlbumTrackGroup
-import com.jddev.simplemusic.ui.home.artist.ArtistTrackGroup
 
 @Composable
 fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel(),
     navigateToSettings: () -> Unit,
-    onArtistGroupSelected: (ArtistTrackGroup) -> Unit,
-    onAlbumGroupSelected: (AlbumTrackGroup) -> Unit,
+    onArtistGroupSelected: (Artist) -> Unit,
+    onAlbumGroupSelected: (Album) -> Unit,
 ) {
     val allTracks = homeViewModel.allTracks.collectAsState()
     val currentTrack = homeViewModel.currentTrack.collectAsState()
-    val artistTracks = homeViewModel.artistTracks.collectAsState()
-    val albumTracks = homeViewModel.albumTracks.collectAsState()
+    val artists = homeViewModel.artists.collectAsState()
+    val albums = homeViewModel.albums.collectAsState()
 
     var showBottomSheetMenu by remember { mutableStateOf(false) }
 
     Box {
         HomeScreen(
             allTracks = allTracks.value,
-            artistGroups = artistTracks.value,
-            albumGroups = albumTracks.value,
+            artists = artists.value,
+            albums = albums.value,
             navigateToSettings = {
                 showBottomSheetMenu = true
             },

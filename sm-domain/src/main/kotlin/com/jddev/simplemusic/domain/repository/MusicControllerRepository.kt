@@ -15,9 +15,11 @@ interface MusicControllerRepository {
     val isShuffleEnabled: StateFlow<Boolean>
     val isRepeatOneEnabled: StateFlow<Boolean>
 
+    fun initializer()
+
     fun addMediaItems(tracks: List<Track>)
 
-    fun play(mediaId: String)
+    fun play(mediaId: Long)
 
     fun resumeCurrentTrack()
 

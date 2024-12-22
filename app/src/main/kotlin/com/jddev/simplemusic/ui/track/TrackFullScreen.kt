@@ -28,7 +28,7 @@ fun TrackScreen(
     Box(Modifier.fillMaxSize()) {
         BlurBackgroundImage(
             Modifier.fillMaxSize(),
-            musicControllerUiState.currentTrack.thumbnailBitmap
+            musicControllerUiState.currentTrack.albumArt
         )
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),

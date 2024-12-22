@@ -5,7 +5,7 @@ import com.jddev.simplemusic.domain.model.Track
 
 fun MediaItem.toTrack() =
     Track(
-        id = mediaId,
+        id = mediaId.toLong(),
         title = mediaMetadata.title.toString(),
         artist = mediaMetadata.subtitle.toString(),
         album = mediaMetadata.albumTitle.toString(),

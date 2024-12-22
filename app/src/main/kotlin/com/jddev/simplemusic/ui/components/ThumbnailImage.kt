@@ -16,28 +16,21 @@ import com.jddev.simplemusic.R
 @Composable
 fun ThumbnailImage(
     modifier: Modifier = Modifier,
-    imageBitmap: Bitmap
+    imageBitmap: Bitmap? = null
 ) {
-    Image(
-        bitmap = imageBitmap.asImageBitmap(),
-        contentDescription = "Track title",
-        contentScale = ContentScale.Crop,
-        modifier = modifier
-            .size(48.dp)
-            .clip(shape = MaterialTheme.shapes.medium)
-    )
-}
-
-@Composable
-fun ThumbnailImage(
-    modifier: Modifier = Modifier,
-) {
-    Image(
+    val size = 64.dp
+    val shape = MaterialTheme.shapes.large
+    imageBitmap?.let { bitmap ->
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = "Track title",
+            contentScale = ContentScale.Crop,
+            modifier = modifier.size(size).clip(shape)
+        )
+    } ?: Image(
         painter = painterResource(id = R.drawable.song_img),
         contentDescription = "Track title",
         contentScale = ContentScale.Crop,
-        modifier = modifier
-            .size(48.dp)
-            .clip(shape = MaterialTheme.shapes.medium)
+        modifier = modifier.size(size).clip(shape)
     )
 }

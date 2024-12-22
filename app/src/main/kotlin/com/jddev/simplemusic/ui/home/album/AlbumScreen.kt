@@ -7,16 +7,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Track
 import com.jddev.simplemusic.ui.utils.listui.SmList
 import com.jddev.simplemusic.ui.utils.listui.trackGroupsToSmItemList
+import com.jddev.simpletouch.ui.component.StUiCircularProgressIndicator
 import com.jddev.simpletouch.ui.component.StUiTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlbumScreen(
     modifier: Modifier = Modifier,
-    albumTrackGroup: AlbumTrackGroup,
+    album: Album?,
+    tracks: List<Track>,
     onTrackSelected: (Track) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -25,17 +28,19 @@ fun AlbumScreen(
         topBar = {
             StUiTopAppBar(
                 modifier = modifier,
-                title = albumTrackGroup.album,
+                title = album?.name ?: "Unknown",
                 onBack = onBack,
             )
         },
     ) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
-            SmList(
-                modifier = Modifier.fillMaxSize(),
-                smListData = trackGroupsToSmItemList(albumTrackGroup.tracks),
-                onItemIndexSelected = { index -> onTrackSelected(albumTrackGroup.tracks[index]) }
-            )
+            if (album == null) {
+                StUiCircularProgressIndicator()
+            } else {
+                SmList(modifier = Modifier.fillMaxSize(),
+                    smListData = trackGroupsToSmItemList(tracks),
+                    onItemIndexSelected = { index -> onTrackSelected(tracks[index]) })
+            }
         }
     }
 }

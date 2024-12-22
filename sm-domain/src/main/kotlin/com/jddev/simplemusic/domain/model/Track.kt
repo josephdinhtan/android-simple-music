@@ -7,18 +7,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 data class Track(
-    val id: String,
+    val id: Long,
     val title: String,
     val album: String,
     val artist: String,
     val trackUrl: String,
 ) {
-    var thumbnailBitmap: Bitmap? = null
+    var albumArt: Bitmap? = null
         private set
+
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            if(thumbnailBitmap == null) {
-                thumbnailBitmap = getFileThumbnail(trackUrl)
+            if(albumArt == null) {
+                albumArt = getFileThumbnail(trackUrl)
             }
         }
     }

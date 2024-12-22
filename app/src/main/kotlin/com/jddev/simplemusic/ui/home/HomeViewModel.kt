@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jddev.simplemusic.domain.model.Track
 import com.jddev.simplemusic.domain.repository.MusicControllerRepository
-import com.jddev.simplemusic.domain.usecase.RequestDeviceScanUseCase
+import com.jddev.simplemusic.domain.usecase.GetAlbumsUseCase
+import com.jddev.simplemusic.domain.usecase.GetAllTrackUseCase
+import com.jddev.simplemusic.domain.usecase.GetArtistsUseCase
 import com.jddev.simplemusic.ui.components.TrackEvent
 import com.jddev.simplemusic.ui.home.album.AlbumTrackGroup
 import com.jddev.simplemusic.ui.home.artist.ArtistTrackGroup
@@ -20,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val requestDeviceScanUseCase: RequestDeviceScanUseCase,
+    private val getAllTrackUseCase: GetAllTrackUseCase,
+    private val getAlbumsUseCase: GetAlbumsUseCase,
+    private val getArtistsUseCase: GetArtistsUseCase,
     private val musicControllerRepository: MusicControllerRepository,
 ) : ViewModel() {
 
@@ -28,13 +32,9 @@ class HomeViewModel @Inject constructor(
     val showFullTrackScreen = _showFullTrackScreen.asStateFlow()
 
     private val _allTracks = MutableStateFlow<List<Track>>(listOf())
-    val allTracks = _allTracks.asStateFlow()
-
-    private val _artistTracks = MutableStateFlow<List<ArtistTrackGroup>>(listOf())
-    val artistTracks = _artistTracks.asStateFlow()
-
-    private val _albumTracks = MutableStateFlow<List<AlbumTrackGroup>>(listOf())
-    val albumTracks = _albumTracks.asStateFlow()
+    val allTracks = getAllTrackUseCase.invoke()
+    val artists = getArtistsUseCase.invoke()
+    val albums = getAlbumsUseCase.invoke()
 
     val currentTrack = musicControllerRepository.currentTrack
     val playerState = musicControllerRepository.playerState
@@ -42,21 +42,21 @@ class HomeViewModel @Inject constructor(
     fun onShowTrackFullScreen() = _showFullTrackScreen.tryEmit(true)
     fun onDismissTrackFullScreen() = _showFullTrackScreen.tryEmit(false)
 
-    fun playATrack(trackId: String) {
+    fun playATrack(trackId: Long) {
+        musicControllerRepository.addMediaItems(allTracks.value)
         musicControllerRepository.play(trackId)
     }
 
     fun scanDevice() {
         // load all tracks
         viewModelScope.launch {
-            val allTracks = requestDeviceScanUseCase()
-            Timber.d("All tracks size: ${allTracks.size}")
-            _allTracks.emit(allTracks)
-            _artistTracks.tryEmit(filterTracksByArtist(allTracks))
-            _albumTracks.tryEmit(filterTracksByAlbum(allTracks))
-
-            // Prepare to play all track
-            musicControllerRepository.addMediaItems(tracks = allTracks)
+//            Timber.d("All tracks size: ${allTracks.size}")
+//            //_allTracks.emit(allTracks)
+//            _artistTracks.tryEmit(filterTracksByArtist(allTracks))
+//            _albumTracks.tryEmit(filterTracksByAlbum(allTracks))
+//
+//            // Prepare to play all track
+//            musicControllerRepository.addMediaItems(tracks = allTracks)
         }
     }
 

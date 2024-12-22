@@ -29,6 +29,7 @@ import com.jddev.simplemusic.ui.components.TrackBottomBar
 import com.jddev.simplemusic.ui.home.HomeRoute
 import com.jddev.simplemusic.ui.home.HomeViewModel
 import com.jddev.simplemusic.ui.home.album.AlbumRoute
+import com.jddev.simplemusic.ui.home.album.AlbumViewModel
 import com.jddev.simplemusic.ui.home.artist.ArtistRoute
 import com.jddev.simplemusic.ui.track.TrackRoute
 
@@ -75,7 +76,7 @@ fun HomeNavGraph(
                 val viewModel: HomeViewModel = viewModel(LocalContext.current as MainActivity)
                 ArtistRoute(
                     homeViewModel = viewModel,
-                    artist = artist,
+                    artistId = artist,
                     onTrackSelected = { track ->
                         homeViewModel.playATrack(track.id)
                     },
@@ -87,14 +88,11 @@ fun HomeNavGraph(
                 route = HomeNavigation.Album.route,
                 arguments = HomeNavigation.Album.arguments
             ) { navBackStackEntry ->
-                val album = HomeNavigation.Album.getAlbum(navBackStackEntry)
-                val viewModel: HomeViewModel = viewModel(LocalContext.current as MainActivity)
+                val albumId = HomeNavigation.Album.getAlbumId(navBackStackEntry)
+                val viewModel: AlbumViewModel = viewModel(LocalContext.current as MainActivity)
                 AlbumRoute(
-                    homeViewModel = viewModel,
-                    album = album,
-                    onTrackSelected = { track ->
-                        homeViewModel.playATrack(track.id)
-                    },
+                    albumViewModel = viewModel,
+                    albumId = albumId,
                     onBack = { nestedHomeNavController.popBackStack() },
                 )
             }

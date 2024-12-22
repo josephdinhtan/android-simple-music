@@ -74,7 +74,7 @@ fun TrackFullScreenBodyContent(
     TrackScreenContent(
         track = musicControllerUiState.currentTrack,
         isTrackPlaying = musicControllerUiState.playerState == PlayerState.PLAYING,
-        imageBitmap = musicControllerUiState.currentTrack.thumbnailBitmap,
+        imageBitmap = musicControllerUiState.currentTrack.albumArt,
         currentTime = musicControllerUiState.currentPosition,
         totalTime = musicControllerUiState.totalDuration,
         playPauseIcon = iconResId,

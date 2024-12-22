@@ -9,13 +9,13 @@ import com.jddev.simplemusic.ui.home.HomeViewModel
 @Composable
 fun ArtistRoute(
     homeViewModel: HomeViewModel = hiltViewModel(),
-    artist: String,
+    artistId: Long,
     onTrackSelected: (Track) -> Unit,
     onBack: () -> Unit,
 ) {
-    val artistTracks = homeViewModel.artistTracks.collectAsState()
+    val artists = homeViewModel.artists.collectAsState()
     ArtistScreen(
-        artistTrackGroup = artistTracks.value.first{ it.artist == artist },
+        artistTrackGroup = ArtistTrackGroup("Test", null, emptyList()),//artists.value.first{ it.artist == artistId },
         onTrackSelected = onTrackSelected,
         onBack = onBack,
     )

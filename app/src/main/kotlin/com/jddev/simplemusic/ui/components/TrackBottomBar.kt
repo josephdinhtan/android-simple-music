@@ -87,7 +87,7 @@ fun TrackBottomBar(
             ) {
                 BlurBackgroundImage(
                     modifier = Modifier.fillMaxSize(),
-                    imageBitmap = track.thumbnailBitmap
+                    imageBitmap = track.albumArt
                 )
                 TrackBottomControllerContent(
                     track = track,
@@ -111,8 +111,8 @@ private fun TrackBottomControllerContent(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (track.thumbnailBitmap != null)
-            ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp), imageBitmap = track.thumbnailBitmap!!)
+        if (track.albumArt != null)
+            ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp), imageBitmap = track.albumArt!!)
         else
             ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp))
         Column(

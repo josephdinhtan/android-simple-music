@@ -4,35 +4,35 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.jddev.simplemusic.ui.home.album.AlbumTrackGroup
-import com.jddev.simplemusic.ui.home.artist.ArtistTrackGroup
+import com.jddev.simplemusic.domain.model.Album
+import com.jddev.simplemusic.domain.model.Artist
 import java.net.URLDecoder
 import java.net.URLEncoder
 
 sealed class HomeNavigation(val route: String) {
 
     data object Home : HomeNavigation("home")
-    data object Artist : HomeNavigation("artist/{artistInfo}") {
-        val arguments = listOf(navArgument("artistInfo") { type = NavType.StringType })
-        fun createRoute(artistInfo: String): String {
-            val encodeArtistInfo = URLEncoder.encode(artistInfo, "UTF-8")
+    data object Artist : HomeNavigation("artist/{artistId}") {
+        val arguments = listOf(navArgument("artistId") { type = NavType.StringType })
+        fun createRoute(artistId: Long): String {
+            val encodeArtistInfo = URLEncoder.encode(artistId.toString(), "UTF-8")
             return "artist/$encodeArtistInfo"
         }
-        fun getArtist(navBackStackEntry: NavBackStackEntry): String {
-            val encodedArtist = navBackStackEntry.arguments?.getString("artistInfo")
-            return URLDecoder.decode(encodedArtist, "UTF-8")
+        fun getArtist(navBackStackEntry: NavBackStackEntry): Long {
+            val encodedArtist = navBackStackEntry.arguments?.getString("artistId")
+            return URLDecoder.decode(encodedArtist, "UTF-8").toLong()
         }
     }
 
-    data object Album : HomeNavigation("album/{albumInfo}") {
-        val arguments = listOf(navArgument("albumInfo") { type = NavType.StringType })
-        fun createRoute(albumInfo: String): String {
-            val encodeAlbumInfo = URLEncoder.encode(albumInfo, "UTF-8")
+    data object Album : HomeNavigation("album/{albumId}") {
+        val arguments = listOf(navArgument("albumId") { type = NavType.StringType })
+        fun createRoute(albumId: Long): String {
+            val encodeAlbumInfo = URLEncoder.encode(albumId.toString(), "UTF-8")
             return "album/$encodeAlbumInfo"
         }
-        fun getAlbum(navBackStackEntry: NavBackStackEntry): String {
-            val encodedAlbum = navBackStackEntry.arguments?.getString("albumInfo")
-            return URLDecoder.decode(encodedAlbum, "UTF-8")
+        fun getAlbumId(navBackStackEntry: NavBackStackEntry): Long {
+            val encodedAlbum = navBackStackEntry.arguments?.getString("albumId")
+            return URLDecoder.decode(encodedAlbum, "UTF-8").toLong()
         }
     }
 }
@@ -45,16 +45,16 @@ class HomeNavigationActions(navController: NavHostController) {
         }
     }
 
-    val navigateToArtist: (artistTrackGroup: ArtistTrackGroup) -> Unit = {
-        val artistInfo = HomeNavigation.Artist.createRoute(it.artist)
+    val navigateToArtist: (artist: Artist) -> Unit = {
+        val artistInfo = HomeNavigation.Artist.createRoute(it.id)
         navController.navigate(artistInfo) {
             launchSingleTop = true
             restoreState = true
         }
     }
 
-    val navigateToAlbum: (albumTrackGroup: AlbumTrackGroup) -> Unit = {
-        val albumInfo = HomeNavigation.Album.createRoute(it.album)
+    val navigateToAlbum: (album: Album) -> Unit = {
+        val albumInfo = HomeNavigation.Album.createRoute(it.id)
         navController.navigate(albumInfo) {
             launchSingleTop = true
             restoreState = true
