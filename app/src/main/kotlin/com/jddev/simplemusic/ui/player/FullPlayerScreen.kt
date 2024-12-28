@@ -1,5 +1,6 @@
-package com.jddev.simplemusic.ui.track
+package com.jddev.simplemusic.ui.player
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
@@ -17,7 +18,8 @@ import com.jddev.simplemusic.ui.utils.getTestTrack
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
-fun TrackScreen(
+fun FullPlayerScreen(
+    getAlbumArt: (Long?, Long) -> Bitmap?,
     onEvent: (TrackEvent) -> Unit,
     musicControllerUiState: MusicControllerUiState,
     onShowMenu: () -> Unit,
@@ -28,7 +30,10 @@ fun TrackScreen(
     Box(Modifier.fillMaxSize()) {
         BlurBackgroundImage(
             Modifier.fillMaxSize(),
-            musicControllerUiState.currentTrack.albumArt
+            imageBitmap = getAlbumArt(
+                musicControllerUiState.currentTrack.albumId,
+                musicControllerUiState.currentTrack.artistId
+            )
         )
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
@@ -36,17 +41,20 @@ fun TrackScreen(
             pageSize = PageSize.Fill,
         ) { page ->
             when (page) {
-                0 -> TrackFullScreenBodyContent(
+                0 -> FullPlayerBodyContent(
+                    musicControllerUiState = musicControllerUiState,
+                    getAlbumArt = getAlbumArt,
                     onShowMenu = onShowMenu,
                     onNavigateUp = onBack,
-                    musicControllerUiState = musicControllerUiState,
                     onEvent = onEvent
                 )
 
-                else -> TrackFullScreenBodyContent(
+                //TODO: Keep same pages, later need to handle other pages
+                else -> FullPlayerBodyContent(
+                    musicControllerUiState = musicControllerUiState,
+                    getAlbumArt = getAlbumArt,
                     onShowMenu = onShowMenu,
                     onNavigateUp = onBack,
-                    musicControllerUiState = musicControllerUiState,
                     onEvent = onEvent
                 )
             }
@@ -61,12 +69,17 @@ fun TrackScreen(
 @Composable
 private fun Preview() {
     StUiPreview {
-        TrackScreen(onEvent = {}, musicControllerUiState = MusicControllerUiState(
-            playerState = PlayerState.PLAYING,
-            currentTrack = Track.getTestTrack(),
-            currentPosition = 20L,
-            totalDuration = 100L,
-        ), onBack = {}, onShowMenu = {})
+        FullPlayerScreen(
+            onEvent = {},
+            musicControllerUiState = MusicControllerUiState(
+                playerState = PlayerState.PLAYING,
+                currentTrack = Track.getTestTrack(),
+                currentPosition = 20L,
+                totalDuration = 100L,
+            ),
+            onBack = {}, onShowMenu = {},
+            getAlbumArt = { _, _ -> null },
+        )
     }
 }
 
@@ -76,11 +89,16 @@ private fun Preview() {
 @Composable
 private fun Preview2() {
     StUiPreview {
-        TrackScreen(onEvent = {}, musicControllerUiState = MusicControllerUiState(
-            playerState = PlayerState.PLAYING,
-            currentTrack = Track.getTestTrack(),
-            currentPosition = 20L,
-            totalDuration = 100L,
-        ), onBack = {}, onShowMenu = {})
+        FullPlayerScreen(
+            onEvent = {},
+            musicControllerUiState = MusicControllerUiState(
+                playerState = PlayerState.PLAYING,
+                currentTrack = Track.getTestTrack(),
+                currentPosition = 20L,
+                totalDuration = 100L,
+            ),
+            onBack = {}, onShowMenu = {},
+            getAlbumArt = { _, _ -> null },
+        )
     }
 }

@@ -25,13 +25,14 @@ import com.jddev.simplemusic.ui.MainActivity
 import com.jddev.simplemusic.ui.components.FullScreenBottomSheet
 import com.jddev.simplemusic.ui.components.HomeMenu
 import com.jddev.simplemusic.ui.components.SmBottomSheet
-import com.jddev.simplemusic.ui.components.TrackBottomBar
 import com.jddev.simplemusic.ui.home.HomeRoute
 import com.jddev.simplemusic.ui.home.HomeViewModel
 import com.jddev.simplemusic.ui.home.album.AlbumRoute
 import com.jddev.simplemusic.ui.home.album.AlbumViewModel
 import com.jddev.simplemusic.ui.home.artist.ArtistRoute
-import com.jddev.simplemusic.ui.track.TrackRoute
+import com.jddev.simplemusic.ui.home.artist.ArtistViewModel
+import com.jddev.simplemusic.ui.player.FullPlayerRoute
+import com.jddev.simplemusic.ui.player.MiniPlayerBar
 
 @Composable
 fun HomeNavGraph(
@@ -73,13 +74,10 @@ fun HomeNavGraph(
                 arguments = HomeNavigation.Artist.arguments
             ) { navBackStackEntry ->
                 val artist = HomeNavigation.Artist.getArtist(navBackStackEntry)
-                val viewModel: HomeViewModel = viewModel(LocalContext.current as MainActivity)
+                val viewModel: ArtistViewModel = viewModel(LocalContext.current as MainActivity)
                 ArtistRoute(
-                    homeViewModel = viewModel,
+                    artistViewModel = viewModel,
                     artistId = artist,
-                    onTrackSelected = { track ->
-                        homeViewModel.playATrack(track.id)
-                    },
                     onBack = { nestedHomeNavController.popBackStack() },
                 )
             }
@@ -98,12 +96,13 @@ fun HomeNavGraph(
             }
         }
 
-        TrackBottomBar(
+        MiniPlayerBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter),
+            track = currentTrack.value,
+            getAlbumArt = homeViewModel::getAlbumArt,
             onTrackEvent = { event -> homeViewModel.onTrackEvent(event) },
             playerState = playerState.value,
-            track = currentTrack.value,
             onBarClick = {
                 homeViewModel.onShowTrackFullScreen()
             }
@@ -114,7 +113,7 @@ fun HomeNavGraph(
         FullScreenBottomSheet(
             onDismissRequest = { homeViewModel.onDismissTrackFullScreen() },
             content = {
-                TrackRoute(
+                FullPlayerRoute(
                     onBack = { homeViewModel.onDismissTrackFullScreen() },
                     navigateToSettings = navigateToSettings,
                 )
@@ -128,11 +127,12 @@ fun HomeNavGraph(
             HomeMenu(
                 modifier = Modifier.fillMaxWidth(),
                 track = currentTrack.value,
+                getAlbumArt = homeViewModel::getAlbumArt,
                 navigateToSettings = {
                     showBottomSheetMenu = false
                     navigateToSettings()
                 },
-                onShowBottomSheetTrackInfo = {}
+                onShowBottomSheetTrackInfo = {},
             )
         }
     }

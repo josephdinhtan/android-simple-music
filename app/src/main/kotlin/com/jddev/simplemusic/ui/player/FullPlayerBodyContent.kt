@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.track
+package com.jddev.simplemusic.ui.player
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -62,19 +62,22 @@ import com.jddev.simplemusic.ui.utils.getTestTrack
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
-fun TrackFullScreenBodyContent(
-    onEvent: (TrackEvent) -> Unit,
+fun FullPlayerBodyContent(
     musicControllerUiState: MusicControllerUiState,
+    getAlbumArt: (Long?, Long) -> Bitmap?,
+    onEvent: (TrackEvent) -> Unit,
     onShowMenu: () -> Unit,
     onNavigateUp: () -> Unit,
 ) {
     val iconResId =
         if (musicControllerUiState.playerState == PlayerState.PLAYING) R.drawable.ic_round_pause else R.drawable.ic_round_play_arrow
 
-    TrackScreenContent(
-        track = musicControllerUiState.currentTrack,
+    TrackScreenContent(track = musicControllerUiState.currentTrack,
         isTrackPlaying = musicControllerUiState.playerState == PlayerState.PLAYING,
-        imageBitmap = musicControllerUiState.currentTrack.albumArt,
+        imageBitmap = getAlbumArt(
+            musicControllerUiState.currentTrack.albumId,
+            musicControllerUiState.currentTrack.artistId
+        ),
         currentTime = musicControllerUiState.currentPosition,
         totalTime = musicControllerUiState.totalDuration,
         playPauseIcon = iconResId,
@@ -99,7 +102,7 @@ fun TrackFullScreenBodyContent(
 }
 
 @Composable
-fun TrackScreenContent(
+private fun TrackScreenContent(
     track: Track,
     isTrackPlaying: Boolean,
     imageBitmap: Bitmap?,
@@ -164,8 +167,7 @@ fun TrackScreenContent(
             }
             Box(Modifier.fillMaxWidth()) {
                 IconButton(
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    onClick = onClose
+                    modifier = Modifier.align(Alignment.CenterStart), onClick = onClose
                 ) {
                     Image(
                         imageVector = Icons.Rounded.KeyboardArrowDown,
@@ -224,16 +226,17 @@ private fun ControllerPart(
         verticalArrangement = Arrangement.Center
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier.basicMarquee(),
-                text = track.title, style = MaterialTheme.typography.headlineSmall,
-                color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis
+                text = track.title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Text(
-                track.artist,
+            Text(track.artist,
                 style = MaterialTheme.typography.titleSmall,
                 color = Color.White,
                 maxLines = 1,
@@ -242,26 +245,21 @@ private fun ControllerPart(
                     .graphicsLayer {
                         alpha = 0.60f
                     }
-                    .basicMarquee()
-            )
+                    .basicMarquee())
         }
         Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            IconButton(
-                onClick = {}
-            ) {
+            IconButton(onClick = {}) {
                 Image(
                     imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
                     contentDescription = "Queue Music",
                     colorFilter = ColorFilter.tint(Color.White)
                 )
             }
-            IconButton(
-                onClick = {}
-            ) {
+            IconButton(onClick = {}) {
                 Image(
                     imageVector = Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite",
@@ -389,15 +387,12 @@ private fun ColumnPortraitRowLandscape(
 private fun Preview() {
     StUiPreview {
         Box(Modifier.background(Color.Gray)) {
-            TrackFullScreenBodyContent(onEvent = {},
-                musicControllerUiState = MusicControllerUiState(
-                    playerState = PlayerState.PLAYING,
-                    currentTrack = Track.getTestTrack(),
-                    currentPosition = 20L,
-                    totalDuration = 100L,
-                ),
-                onShowMenu = {},
-                onNavigateUp = {})
+            FullPlayerBodyContent(onEvent = {}, musicControllerUiState = MusicControllerUiState(
+                playerState = PlayerState.PLAYING,
+                currentTrack = Track.getTestTrack(),
+                currentPosition = 20L,
+                totalDuration = 100L,
+            ), onShowMenu = {}, onNavigateUp = {}, getAlbumArt = { _, _ -> null })
         }
     }
 }
@@ -409,15 +404,12 @@ private fun Preview() {
 private fun Preview2() {
     StUiPreview {
         Box(Modifier.background(Color.Gray)) {
-            TrackFullScreenBodyContent(onEvent = {},
-                musicControllerUiState = MusicControllerUiState(
-                    playerState = PlayerState.PLAYING,
-                    currentTrack = Track.getTestTrack(),
-                    currentPosition = 20L,
-                    totalDuration = 100L,
-                ),
-                onNavigateUp = {},
-                onShowMenu = {})
+            FullPlayerBodyContent(onEvent = {}, musicControllerUiState = MusicControllerUiState(
+                playerState = PlayerState.PLAYING,
+                currentTrack = Track.getTestTrack(),
+                currentPosition = 20L,
+                totalDuration = 100L,
+            ), onNavigateUp = {}, onShowMenu = {}, getAlbumArt = { _, _ -> null })
         }
     }
 }

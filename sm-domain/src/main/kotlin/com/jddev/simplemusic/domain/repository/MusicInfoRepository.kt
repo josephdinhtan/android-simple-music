@@ -1,5 +1,6 @@
 package com.jddev.simplemusic.domain.repository
 
+import android.graphics.Bitmap
 import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.domain.model.PlayList
@@ -14,5 +15,8 @@ interface MusicInfoRepository {
 
     fun initializer()
     fun getAlbum(albumId: Long): Album?
-    suspend fun getTrackGivenAlbum(albumId: Long): List<Track>
+    fun getAlbumArt(albumId: Long?, artistId: Long): Bitmap?
+    fun getArtist(artistId: Long): Artist?
+    suspend fun getTrackGivenAlbumId(albumId: Long): List<Track>
+    suspend fun getTrackGivenArtistId(artistId: Long): List<Track>
 }

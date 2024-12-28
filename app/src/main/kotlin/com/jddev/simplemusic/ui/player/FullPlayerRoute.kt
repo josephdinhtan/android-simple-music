@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.track
+package com.jddev.simplemusic.ui.player
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -17,15 +17,15 @@ import com.jddev.simplemusic.ui.components.TrackInfoContent
 
 
 @Composable
-fun TrackRoute(
-    trackViewModel: TrackViewModel = hiltViewModel(),
+fun FullPlayerRoute(
+    fullPlayerViewModel: FullPlayerViewModel = hiltViewModel(),
     navigateToSettings: () -> Unit,
     onBack: () -> Unit,
 ) {
-    val playerState = trackViewModel.playerState.collectAsState()
-    val currentPosition = trackViewModel.currentPosition.collectAsState()
-    val totalDuration = trackViewModel.totalDuration.collectAsState()
-    val currentTrack = trackViewModel.currentTrack.collectAsState()
+    val playerState = fullPlayerViewModel.playerState.collectAsState()
+    val currentPosition = fullPlayerViewModel.currentPosition.collectAsState()
+    val totalDuration = fullPlayerViewModel.totalDuration.collectAsState()
+    val currentTrack = fullPlayerViewModel.currentTrack.collectAsState()
     var showBottomSheetMenu by remember { mutableStateOf(false) }
     var showBottomSheetTrackInfo by remember { mutableStateOf(false) }
 
@@ -37,17 +37,18 @@ fun TrackRoute(
         currentPosition = currentPosition.value,
         totalDuration = totalDuration.value,
     )
-    TrackScreen(
+    FullPlayerScreen(
+        getAlbumArt = fullPlayerViewModel::getAlbumArt,
         onEvent = {
             when (it) {
-                TrackEvent.Play -> trackViewModel.play()
-                TrackEvent.Pause -> trackViewModel.pause()
-                TrackEvent.Resume -> trackViewModel.resume()
-                TrackEvent.SkipToNext -> trackViewModel.skipToNext()
-                TrackEvent.SkipToPrevious -> trackViewModel.skipToPrevious()
+                TrackEvent.Play -> fullPlayerViewModel.play()
+                TrackEvent.Pause -> fullPlayerViewModel.pause()
+                TrackEvent.Resume -> fullPlayerViewModel.resume()
+                TrackEvent.SkipToNext -> fullPlayerViewModel.skipToNext()
+                TrackEvent.SkipToPrevious -> fullPlayerViewModel.skipToPrevious()
                 TrackEvent.Fetch -> TODO()
                 is TrackEvent.OnSongSelected -> TODO()
-                is TrackEvent.SeekTrackToPosition -> trackViewModel.seekTrackToPosition(it.position)
+                is TrackEvent.SeekTrackToPosition -> fullPlayerViewModel.seekTrackToPosition(it.position)
             }
         },
         musicControllerUiState = musicControllerUiState,
@@ -62,6 +63,7 @@ fun TrackRoute(
             HomeMenu(
                 modifier = Modifier.fillMaxWidth(),
                 track = currentTrack.value,
+                getAlbumArt = fullPlayerViewModel::getAlbumArt,
                 navigateToSettings = {
                     showBottomSheetMenu = false
                     navigateToSettings()
@@ -83,6 +85,7 @@ fun TrackRoute(
             TrackInfoContent(
                 modifier = Modifier.fillMaxWidth(),
                 track = currentTrack.value!!,
+                getAlbumArt = fullPlayerViewModel::getAlbumArt,
             )
         }
     }

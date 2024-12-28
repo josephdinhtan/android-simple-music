@@ -2,7 +2,6 @@ package com.jddev.simplemusic.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,12 +24,12 @@ fun ThumbnailImage(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = "Track title",
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(size).clip(shape)
+            modifier = modifier.clip(shape)
         )
     } ?: Image(
         painter = painterResource(id = R.drawable.song_img),
         contentDescription = "Track title",
         contentScale = ContentScale.Crop,
-        modifier = modifier.size(size).clip(shape)
+        modifier = modifier.clip(shape)
     )
 }

@@ -1,6 +1,7 @@
 package com.jddev.simplemusic.ui.home.album
 
-import androidx.compose.foundation.layout.Column
+import android.graphics.Bitmap
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Track
-import com.jddev.simplemusic.ui.utils.listui.SmList
+import com.jddev.simplemusic.ui.utils.listui.SmUiList
 import com.jddev.simplemusic.ui.utils.listui.trackGroupsToSmItemList
 import com.jddev.simpletouch.ui.component.StUiCircularProgressIndicator
 import com.jddev.simpletouch.ui.component.StUiTopAppBar
@@ -21,6 +22,7 @@ fun AlbumScreen(
     album: Album?,
     tracks: List<Track>,
     onTrackSelected: (Track) -> Unit,
+    getAlbumArt: (albumId: Long?, artistId: Long) -> Bitmap?,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -33,14 +35,15 @@ fun AlbumScreen(
             )
         },
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
-            if (album == null) {
-                StUiCircularProgressIndicator()
-            } else {
-                SmList(modifier = Modifier.fillMaxSize(),
+        Box(Modifier.padding(innerPadding)) {
+            album?.let {
+                SmUiList(modifier = Modifier.fillMaxSize(),
                     smListData = trackGroupsToSmItemList(tracks),
-                    onItemIndexSelected = { index -> onTrackSelected(tracks[index]) })
-            }
+                    getAlbumArt = getAlbumArt,
+                    onItemIndexSelected = { index ->
+                        onTrackSelected(tracks[index])
+                    })
+            } ?: StUiCircularProgressIndicator()
         }
     }
 }

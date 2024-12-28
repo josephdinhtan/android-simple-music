@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.jddev.simplemusic.data.service.MusicService
 import com.jddev.simplemusic.domain.model.PlayerState
 import com.jddev.simplemusic.domain.model.Track
-import com.jddev.simplemusic.domain.repository.MusicControllerRepository
+import com.jddev.simplemusic.domain.repository.PlaybackRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepository {
+class PlaybackRepositoryImpl(val context: Context) : PlaybackRepository {
 
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private var mediaController: MediaController? = null
@@ -75,7 +75,7 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
                 Timber.e("onEvents: player $player")
                 with(player) {
                     _playerState.tryEmit(playbackState.toPlayerState(isPlaying))
-                    _currentTrack.tryEmit(availableTracks.firstOrNull { it.trackUrl == currentMediaItem?.mediaId})
+                    _currentTrack.tryEmit(availableTracks.firstOrNull { it.data == currentMediaItem?.mediaId})
                     _currentPosition.tryEmit(currentPosition)
                     _totalDuration.tryEmit(duration)
                     _isShuffleEnabled.tryEmit(shuffleModeEnabled)
@@ -95,7 +95,7 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
             }
 
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                val track = availableTracks.firstOrNull { it.trackUrl == mediaItem?.mediaId}
+                val track = availableTracks.firstOrNull { it.data == mediaItem?.mediaId}
                 Timber.d("onMediaItemTransition track: ${track?.title}")
                 _currentTrack.tryEmit(track)
                 super.onMediaItemTransition(mediaItem, reason)
@@ -130,7 +130,7 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
     override fun addMediaItems(tracks: List<Track>) {
         if (tracks.isEmpty()) return
         Timber.d("addMediaItems tracks[0]: ${tracks[0].title}")
-        Timber.d("addMediaItems tracks[0]: ${tracks[0].trackUrl}")
+        Timber.d("addMediaItems tracks[0]: ${tracks[0].data}")
         availableTracks.clear()
         availableTracks.addAll(tracks)
         setupMediaAudioItems(tracks)
@@ -139,8 +139,8 @@ class MusicControllerRepositoryImpl(val context: Context) : MusicControllerRepos
     private fun setupMediaAudioItems(tracks: List<Track>) {
         val mediaItems = tracks.map { track ->
             MediaItem.Builder()
-                .setMediaId(track.trackUrl)
-                .setUri(Uri.parse(track.trackUrl))
+                .setMediaId(track.data)
+                .setUri(Uri.parse(track.data))
                 .setMediaMetadata(
                     MediaMetadata.Builder()
                         .setTitle(track.title)

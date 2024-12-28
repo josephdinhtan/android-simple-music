@@ -1,5 +1,6 @@
-package com.jddev.simplemusic.ui.components
+package com.jddev.simplemusic.ui.player
 
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,21 +34,27 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jddev.simplemusic.R
 import com.jddev.simplemusic.domain.model.PlayerState
 import com.jddev.simplemusic.domain.model.Track
+import com.jddev.simplemusic.ui.components.BlurBackgroundImage
+import com.jddev.simplemusic.ui.components.ThumbnailImage
+import com.jddev.simplemusic.ui.components.TrackEvent
 import com.jddev.simplemusic.ui.utils.getTestTrack
 import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
-fun TrackBottomBar(
+fun MiniPlayerBar(
     modifier: Modifier = Modifier,
+    track: Track?,
+    getAlbumArt: (Long?, Long) -> Bitmap?,
     onTrackEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
-    track: Track?,
     onBarClick: () -> Unit
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -85,12 +92,13 @@ fun TrackBottomBar(
                     )
                     .clickable(onClick = { onBarClick() }),
             ) {
+                val imageBitmap = getAlbumArt(track.albumId, track.artistId)
                 BlurBackgroundImage(
-                    modifier = Modifier.fillMaxSize(),
-                    imageBitmap = track.albumArt
+                    modifier = Modifier.fillMaxSize(), imageBitmap = imageBitmap
                 )
                 TrackBottomControllerContent(
                     track = track,
+                    imageBitmap = imageBitmap,
                     onEvent = onTrackEvent,
                     playerState = playerState,
                 )
@@ -103,6 +111,7 @@ fun TrackBottomBar(
 @Composable
 private fun TrackBottomControllerContent(
     track: Track,
+    imageBitmap: Bitmap?,
     onEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
 ) {
@@ -111,34 +120,44 @@ private fun TrackBottomControllerContent(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (track.albumArt != null)
-            ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp), imageBitmap = track.albumArt!!)
-        else
-            ThumbnailImage(modifier = Modifier.padding(start = 16.dp).padding(vertical = 8.dp))
+        ThumbnailImage(
+            modifier = Modifier
+                .size(64.dp)
+                .padding(start = 16.dp)
+                .padding(vertical = 8.dp),
+            imageBitmap = imageBitmap
+        )
         Column(
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 8.dp, horizontal = 8.dp),
         ) {
             Text(
                 track.title,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.W700),
+                textAlign = TextAlign.Center,
+                color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth().basicMarquee(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .basicMarquee(),
             )
 
             Text(track.artist,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = Color.White,
+                textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth().graphicsLayer {
-                    alpha = 0.60f
-                })
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .basicMarquee()
+                    .graphicsLayer {
+                        alpha = 0.90f
+                    })
         }
         val painter = painterResource(
             if (playerState == PlayerState.PLAYING) {
@@ -174,10 +193,10 @@ private fun TrackBottomControllerContent(
 @Preview
 private fun Preview() {
     StUiPreview(modifier = Modifier.background(Color.Green.copy(alpha = 0.3f))) {
-        TrackBottomBar(
-            onTrackEvent = {},
+        MiniPlayerBar(onTrackEvent = {},
             playerState = PlayerState.PLAYING,
             track = Track.getTestTrack(),
-            onBarClick = {})
+            onBarClick = {},
+            getAlbumArt = { _, _ -> null })
     }
 }

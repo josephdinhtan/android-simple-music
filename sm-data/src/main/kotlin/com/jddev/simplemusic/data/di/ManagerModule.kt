@@ -1,8 +1,8 @@
 package com.jddev.simplemusic.data.di
 
 import android.content.Context
-import com.jddev.simplemusic.data.managers.MusicInfoManager
-import com.jddev.simplemusic.data.managers.MusicInfoManagerImpl
+import com.jddev.simplemusic.data.managers.musicinfomanager.MusicInfoManager
+import com.jddev.simplemusic.data.managers.musicinfomanager.MusicInfoManagerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

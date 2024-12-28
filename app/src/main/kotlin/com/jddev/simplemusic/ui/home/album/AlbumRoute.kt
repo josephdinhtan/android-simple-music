@@ -22,6 +22,7 @@ fun AlbumRoute(
         onTrackSelected = { track ->
             albumViewModel.playATrack(track.id)
         },
+        getAlbumArt = albumViewModel::getAlbumArt,
         onBack = onBack,
     )
 }

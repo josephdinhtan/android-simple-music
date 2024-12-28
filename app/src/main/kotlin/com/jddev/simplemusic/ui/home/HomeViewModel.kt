@@ -1,10 +1,12 @@
 package com.jddev.simplemusic.ui.home
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jddev.simplemusic.domain.model.Track
-import com.jddev.simplemusic.domain.repository.MusicControllerRepository
+import com.jddev.simplemusic.domain.repository.PlaybackRepository
+import com.jddev.simplemusic.domain.usecase.GetAlbumArtUseCase
 import com.jddev.simplemusic.domain.usecase.GetAlbumsUseCase
 import com.jddev.simplemusic.domain.usecase.GetAllTrackUseCase
 import com.jddev.simplemusic.domain.usecase.GetArtistsUseCase
@@ -25,7 +27,8 @@ class HomeViewModel @Inject constructor(
     private val getAllTrackUseCase: GetAllTrackUseCase,
     private val getAlbumsUseCase: GetAlbumsUseCase,
     private val getArtistsUseCase: GetArtistsUseCase,
-    private val musicControllerRepository: MusicControllerRepository,
+    private val musicControllerRepository: PlaybackRepository,
+    private val getAlbumArtUseCase: GetAlbumArtUseCase,
 ) : ViewModel() {
 
     private val _showFullTrackScreen = MutableStateFlow<Boolean>(false)
@@ -88,5 +91,9 @@ class HomeViewModel @Inject constructor(
             albumTrackGroups.add(AlbumTrackGroup(album = album, tracks = tracks))
         }
         return albumTrackGroups
+    }
+
+    fun getAlbumArt(albumId: Long?, artistId: Long): Bitmap? {
+        return getAlbumArtUseCase.invoke(albumId, artistId)
     }
 }

@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 
-fun getFileThumbnail(path: String?): Bitmap? {
+fun getAlbumArt(path: String?): Bitmap? {
     try {
         if (path == null) return null
         val mr = MediaMetadataRetriever()

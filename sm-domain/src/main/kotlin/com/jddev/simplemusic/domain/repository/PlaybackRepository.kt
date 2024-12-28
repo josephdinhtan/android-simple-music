@@ -4,7 +4,7 @@ import com.jddev.simplemusic.domain.model.PlayerState
 import com.jddev.simplemusic.domain.model.Track
 import kotlinx.coroutines.flow.StateFlow
 
-interface MusicControllerRepository {
+interface PlaybackRepository {
 
     val currentTrack: StateFlow<Track?>
     val isReady: StateFlow<Boolean>

@@ -1,5 +1,6 @@
 package com.jddev.simplemusic.ui.home
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.domain.model.Track
-import com.jddev.simplemusic.ui.utils.listui.SmList
+import com.jddev.simplemusic.ui.utils.listui.SmUiList
 import com.jddev.simplemusic.ui.utils.listui.albumTrackGroupsToSmItemList
 import com.jddev.simplemusic.ui.utils.listui.artistTrackGroupsToSmItemList
 import com.jddev.simplemusic.ui.utils.listui.trackGroupsToSmItemList
@@ -60,6 +61,7 @@ fun HomeScreen(
     allTracks: List<Track>,
     artists: List<Artist>,
     albums: List<Album>,
+    getAlbumArt: (albumId: Long?, artistId: Long) -> Bitmap?,
     onTrackSelected: (Track) -> Unit,
     onArtistGroupSelected: (Artist) -> Unit,
     onAlbumGroupSelected: (Album) -> Unit,
@@ -67,25 +69,22 @@ fun HomeScreen(
     requestScanDevice: () -> Unit,
 ) {
     musicCategory[0] = HomeFragmentItem("Tracks", content = {
-        SmList(
-            modifier = Modifier.fillMaxSize(),
+        SmUiList(modifier = Modifier.fillMaxSize(),
             smListData = trackGroupsToSmItemList(allTracks),
-            onItemIndexSelected = { index -> onTrackSelected(allTracks[index]) }
-        )
+            getAlbumArt = getAlbumArt,
+            onItemIndexSelected = { index -> onTrackSelected(allTracks[index]) })
     })
     musicCategory[1] = HomeFragmentItem("Artists", content = {
-        SmList(
-            modifier = Modifier.fillMaxSize(),
+        SmUiList(modifier = Modifier.fillMaxSize(),
             smListData = artistTrackGroupsToSmItemList(artists),
-            onItemIndexSelected = { index -> onArtistGroupSelected(artists[index]) }
-        )
+            getAlbumArt = getAlbumArt,
+            onItemIndexSelected = { index -> onArtistGroupSelected(artists[index]) })
     })
     musicCategory[2] = HomeFragmentItem("Albums", content = {
-        SmList(
-            modifier = Modifier.fillMaxSize(),
+        SmUiList(modifier = Modifier.fillMaxSize(),
             smListData = albumTrackGroupsToSmItemList(albums),
-            onItemIndexSelected = { index -> onAlbumGroupSelected(albums[index]) }
-        )
+            getAlbumArt = getAlbumArt,
+            onItemIndexSelected = { index -> onAlbumGroupSelected(albums[index]) })
     })
     Scaffold(
         modifier = modifier,
@@ -110,8 +109,7 @@ fun HomeScreen(
         HomeContent(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
-            contents = musicCategory
+                .fillMaxSize(), contents = musicCategory
         )
     }
 }
@@ -125,14 +123,12 @@ private fun HomeContent(
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
-        val firstPagerState =
-            rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
-                contents.size
-            }
-        val secondPagerState =
-            rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
-                contents.size
-            }
+        val firstPagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
+            contents.size
+        }
+        val secondPagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
+            contents.size
+        }
         LaunchedEffect(firstPagerState) {
             snapshotFlow { firstPagerState.currentPage }.collect { page ->
                 coroutineScope.launch {
@@ -148,23 +144,20 @@ private fun HomeContent(
                 if (firstPagerState.isScrollInProgress) {
                     coroutineScope.launch {
                         secondPagerState.scrollToPage(
-                            firstPagerState.currentPage,
-                            firstPagerState.currentPageOffsetFraction
+                            firstPagerState.currentPage, firstPagerState.currentPageOffsetFraction
                         )
                     }
                 } else if (secondPagerState.isScrollInProgress) {
                     coroutineScope.launch {
                         firstPagerState.scrollToPage(
-                            secondPagerState.currentPage,
-                            secondPagerState.currentPageOffsetFraction
+                            secondPagerState.currentPage, secondPagerState.currentPageOffsetFraction
                         )
                     }
                 }
             }
         }
         val fling = PagerDefaults.flingBehavior(
-            state = firstPagerState,
-            pagerSnapDistance = PagerSnapDistance.atMost(7)
+            state = firstPagerState, pagerSnapDistance = PagerSnapDistance.atMost(7)
         )
         HorizontalPager(
             state = firstPagerState,
@@ -182,8 +175,7 @@ private fun HomeContent(
                 }
             }) {
                 Text(
-                    text = contents[page].title,
-                    style = TextStyle(fontSize = fontSize)
+                    text = contents[page].title, style = TextStyle(fontSize = fontSize)
                 )
             }
         }
@@ -215,7 +207,8 @@ private fun Preview() {
             artists = listOf(),
             onArtistGroupSelected = {},
             albums = listOf(),
-            onAlbumGroupSelected = {}
+            onAlbumGroupSelected = {},
+            getAlbumArt = { _, _ -> null },
         )
     }
 }

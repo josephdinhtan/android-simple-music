@@ -5,9 +5,12 @@ import com.jddev.simplemusic.domain.model.Track
 fun Track.Companion.getTestTrack(): Track {
     return Track(
         id = 0,
-        title = "Test Titlte",
+        title = "Test Title",
         album = "Test Album",
         artist = "Test Artist",
-        trackUrl = "Test Track Url",
+        data = "Test Track Url",
+        year = 1,
+        albumId = 1,
+        artistId = 1,
     )
 }

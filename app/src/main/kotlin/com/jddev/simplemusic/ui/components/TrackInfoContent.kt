@@ -1,5 +1,6 @@
 package com.jddev.simplemusic.ui.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,18 +28,16 @@ import com.jddev.simplemusic.updatest.StUiPreview
 
 @Composable
 fun TrackInfoContent(
-    modifier: Modifier = Modifier,
-    track: Track
+    modifier: Modifier = Modifier, track: Track, getAlbumArt: (Long?, Long) -> Bitmap?
 ) {
     Column(modifier = modifier) {
         Row(
             Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
-            val imageBitmap = track.albumArt
-            if (imageBitmap != null) ThumbnailImage(
+            val imageBitmap = getAlbumArt(track.albumId, track.artistId)
+            ThumbnailImage(
                 imageBitmap = imageBitmap, modifier = Modifier.padding(16.dp)
             )
-            else ThumbnailImage(modifier = Modifier.padding(16.dp))
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start,
@@ -60,8 +59,7 @@ fun TrackInfoContent(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.graphicsLayer {
                         alpha = 0.60f
-                    }
-                )
+                    })
             }
         }
         HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
@@ -96,8 +94,6 @@ private fun MenuItem(
 @Preview
 private fun Preview() {
     StUiPreview {
-        TrackInfoContent(
-            track = Track.getTestTrack(),
-        )
+        TrackInfoContent(track = Track.getTestTrack(), getAlbumArt = { _, _ -> null })
     }
 }

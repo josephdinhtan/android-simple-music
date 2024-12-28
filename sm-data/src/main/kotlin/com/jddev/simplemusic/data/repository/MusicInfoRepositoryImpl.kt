@@ -1,7 +1,8 @@
 package com.jddev.simplemusic.data.repository
 
 import android.content.Context
-import com.jddev.simplemusic.data.managers.MusicInfoManager
+import android.graphics.Bitmap
+import com.jddev.simplemusic.data.managers.musicinfomanager.MusicInfoManager
 import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.domain.model.PlayList
@@ -33,16 +34,36 @@ class MusicInfoRepositoryImpl(
     override fun initializer() {
         coroutineScope.launch {
             _allTracks.value = musicInfoManager.queryAllTracks()
-            _albums.value = musicInfoManager.queryAlbums()
             _artists.value = musicInfoManager.queryArtists()
+            _albums.value = musicInfoManager.queryAlbums()
         }
     }
 
     override fun getAlbum(albumId: Long): Album? {
-        return _albums.value.firstOrNull{it.id == albumId}
+        return albums.value.firstOrNull { it.id == albumId }
     }
 
-    override suspend fun getTrackGivenAlbum(albumId: Long): List<Track> {
-        return musicInfoManager.queryTracksGivenAlbum(albumId)
+    override fun getAlbumArt(albumId: Long?, artistId: Long): Bitmap? {
+        return if (albumId == null) {
+            musicInfoManager.getAlbumArt(artistId)
+        } else {
+            musicInfoManager.getAlbumArt(albumId, artistId)
+        }
+    }
+
+    override fun getArtist(artistId: Long): Artist? {
+        return artists.value.firstOrNull { it.id == artistId }
+    }
+
+    override suspend fun getTrackGivenAlbumId(albumId: Long): List<Track> {
+        val trackIds = musicInfoManager.queryTrackIdGivenAlbumId(albumId)
+        val res = allTracks.value.filter { track -> track.id in trackIds }.toList()
+        return res
+    }
+
+    override suspend fun getTrackGivenArtistId(artistId: Long): List<Track> {
+        val trackIds = musicInfoManager.queryTrackIdGivenArtistId(artistId)
+        val res = allTracks.value.filter { track -> track.id in trackIds }.toList()
+        return res
     }
 }

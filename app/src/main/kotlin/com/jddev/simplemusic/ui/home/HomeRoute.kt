@@ -41,6 +41,7 @@ fun HomeRoute(
             onTrackSelected = { track ->
                 homeViewModel.playATrack(track.id)
             },
+            getAlbumArt = homeViewModel::getAlbumArt,
             onArtistGroupSelected = onArtistGroupSelected,
             onAlbumGroupSelected = onAlbumGroupSelected,
         )
@@ -52,6 +53,7 @@ fun HomeRoute(
             HomeMenu(
                 modifier = Modifier.fillMaxWidth(),
                 track = currentTrack.value,
+                getAlbumArt = homeViewModel::getAlbumArt,
                 navigateToSettings = {
                     showBottomSheetMenu = false
                     navigateToSettings()
