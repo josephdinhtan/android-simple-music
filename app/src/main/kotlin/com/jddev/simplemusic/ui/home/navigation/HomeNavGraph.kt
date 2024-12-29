@@ -2,6 +2,7 @@ package com.jddev.simplemusic.ui.home.navigation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -58,6 +60,7 @@ fun HomeNavGraph(
                 route = HomeNavigation.Home.route,
             ) {
                 HomeRoute(
+                    bottomPadding = currentTrack.value?.let { 64.dp } ?: 0.dp,
                     homeViewModel = homeViewModel,
                     navigateToSettings = navigateToSettings,
                     onArtistGroupSelected = {
@@ -95,18 +98,23 @@ fun HomeNavGraph(
                 )
             }
         }
-
-        MiniPlayerBar(
-            modifier = Modifier
-                .align(Alignment.BottomCenter),
-            track = currentTrack.value,
-            getAlbumArt = homeViewModel::getAlbumArt,
-            onTrackEvent = { event -> homeViewModel.onTrackEvent(event) },
-            playerState = playerState.value,
-            onBarClick = {
-                homeViewModel.onShowTrackFullScreen()
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            visible = currentTrack.value != null) {
+            currentTrack.value?.let { track ->
+                MiniPlayerBar(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    track = track,
+                    getAlbumArt = homeViewModel::getAlbumArt,
+                    onTrackEvent = { event -> homeViewModel.onTrackEvent(event) },
+                    playerState = playerState.value,
+                    onBarClick = {
+                        homeViewModel.onShowTrackFullScreen()
+                    }
+                )
             }
-        )
+        }
     }
 
     if (showTrackFullScreen.value) {

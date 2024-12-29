@@ -2,7 +2,6 @@ package com.jddev.simplemusic.ui.home
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,10 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jddev.simplemusic.domain.model.Album
@@ -58,6 +57,7 @@ private val musicCategory = mutableListOf(
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    bottomPadding: Dp = 0.dp,
     allTracks: List<Track>,
     artists: List<Artist>,
     albums: List<Album>,
@@ -109,7 +109,9 @@ fun HomeScreen(
         HomeContent(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(), contents = musicCategory
+                .fillMaxSize(),
+            contents = musicCategory,
+            bottomPadding = bottomPadding,
         )
     }
 }
@@ -117,6 +119,7 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     modifier: Modifier = Modifier,
+    bottomPadding: Dp,
     contents: List<HomeFragmentItem>,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
@@ -185,9 +188,7 @@ private fun HomeContent(
             pageSize = PageSize.Fill,
         ) { page ->
             Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                modifier = Modifier.fillMaxSize().padding(bottom = bottomPadding),
             ) {
                 contents[page].content()
             }

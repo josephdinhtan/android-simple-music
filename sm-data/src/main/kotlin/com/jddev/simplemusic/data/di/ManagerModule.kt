@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -16,6 +17,7 @@ object ManagerModule {
 
     @Singleton
     @Provides
-    fun provideMusicInfoManager(@ApplicationContext context: Context): MusicInfoManager =
-        MusicInfoManagerImpl(context)
+    fun provideMusicInfoManager(
+        @ApplicationContext context: Context, @CoroutineScopeIO coroutineScope: CoroutineScope
+    ): MusicInfoManager = MusicInfoManagerImpl(context, coroutineScope)
 }

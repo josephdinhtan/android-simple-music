@@ -7,9 +7,17 @@ import android.graphics.Bitmap
 import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.domain.model.Track
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
-class MusicInfoManagerImpl(val context: Context) : MusicInfoManager {
+class MusicInfoManagerImpl(
+    private val context: Context,
+    private val coroutineScope: CoroutineScope,
+) : MusicInfoManager {
 
     private val albumArtGivenAlbumArtistCache = hashMapOf<Pair<Long, Long>, Bitmap?>()
     private val albumArtGivenArtistCache = hashMapOf<Long, Bitmap?>()
@@ -26,10 +34,70 @@ class MusicInfoManagerImpl(val context: Context) : MusicInfoManager {
             while (cursor.moveToNext()) {
                 val isMusic =
                     cursor.getInt(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.IS_MUSIC))
-                if (isMusic == 1) {
-                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(MusicInfoStore.Media._ID))
+                if (isMusic != 1) continue
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MusicInfoStore.Media._ID))
+                val title =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.TITLE))
+                val artist =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.ARTIST))
+                val artistId =
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.ARTIST_ID))
+                val album =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.ALBUM))
+                val albumId =
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.ALBUM_ID))
+                val data =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.DATA))
+                val year =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.YEAR))
+
+                //TODO: This make delay amount of time, should have better approach here
+                val albumArt = DbUtils.getAlbumArt(data)
+                if (albumArt != null) {
+                    if (albumArtGivenAlbumArtistCache[Pair(albumId, artistId)] == null) {
+                        albumArtGivenAlbumArtistCache[Pair(albumId, artistId)] = albumArt
+                    }
+                    if (albumArtGivenArtistCache[artistId] == null) {
+                        albumArtGivenArtistCache[artistId] = albumArt
+                    }
+                }
+                tracks.add(
+                    Track(
+                        id = id,
+                        title = title,
+                        artist = artist,
+                        album = album,
+                        data = data,
+                        year = year,
+                        albumId = albumId,
+                        artistId = artistId,
+                    )
+                )
+            }
+            cursor.close()
+        }
+        return tracks
+    }
+
+    override fun queryAllTracksAsync(): StateFlow<List<Track>> {
+        val tracksStateFlow = MutableStateFlow<MutableList<Track>>(mutableListOf())
+        coroutineScope.launch {
+            val contentResolver: ContentResolver = context.contentResolver
+            val uri = MusicInfoStore.Media.EXTERNAL_CONTENT_URI
+            val projection = DbUtils.TRACK_PROJECTION
+            val cursor = contentResolver.query(uri, projection, null, null, null)
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    val isMusic =
+                        cursor.getInt(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.IS_MUSIC))
+                    val id =
+                        cursor.getLong(cursor.getColumnIndexOrThrow(MusicInfoStore.Media._ID))
                     val title =
                         cursor.getString(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.TITLE))
+                    if (isMusic != 1 ||
+                        title.lowercase().startsWith("call recording") ||
+                        title.lowercase().startsWith("ghi âm cuộc gọi")
+                    ) continue
                     val artist =
                         cursor.getString(cursor.getColumnIndexOrThrow(MusicInfoStore.Media.ARTIST))
                     val artistId =
@@ -53,23 +121,27 @@ class MusicInfoManagerImpl(val context: Context) : MusicInfoManager {
                             albumArtGivenArtistCache[artistId] = albumArt
                         }
                     }
-                    tracks.add(
-                        Track(
-                            id = id,
-                            title = title,
-                            artist = artist,
-                            album = album,
-                            data = data,
-                            year = year,
-                            albumId = albumId,
-                            artistId = artistId,
+
+                    tracksStateFlow.update {
+                        it.add(
+                            Track(
+                                id = id,
+                                title = title,
+                                artist = artist,
+                                album = album,
+                                data = data,
+                                year = year,
+                                albumId = albumId,
+                                artistId = artistId,
+                            )
                         )
-                    )
+                        it
+                    }
                 }
+                cursor.close()
             }
-            cursor.close()
         }
-        return tracks
+        return tracksStateFlow
     }
 
     override fun queryAlbums(): List<Album> {

@@ -11,8 +11,6 @@ import com.jddev.simplemusic.domain.usecase.GetAlbumsUseCase
 import com.jddev.simplemusic.domain.usecase.GetAllTrackUseCase
 import com.jddev.simplemusic.domain.usecase.GetArtistsUseCase
 import com.jddev.simplemusic.ui.components.TrackEvent
-import com.jddev.simplemusic.ui.home.album.AlbumTrackGroup
-import com.jddev.simplemusic.ui.home.artist.ArtistTrackGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,7 +62,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onTrackEvent(event: TrackEvent) {
-        when(event) {
+        when (event) {
             TrackEvent.Pause -> musicControllerRepository.pauseCurrentTrack()
             TrackEvent.Resume -> musicControllerRepository.resumeCurrentTrack()
             TrackEvent.SkipToNext -> musicControllerRepository.skipToNextTrack()
@@ -73,24 +71,6 @@ class HomeViewModel @Inject constructor(
                 Timber.e("Event not handled: $event")
             }
         }
-    }
-
-    private fun filterTracksByArtist(tracks: List<Track>): List<ArtistTrackGroup> {
-        val artistTracksMap: Map<String, List<Track>> = tracks.groupBy { it.artist }
-        val artistTrackGroups = mutableListOf<ArtistTrackGroup>()
-        artistTracksMap.forEach { (artist, tracks) ->
-            artistTrackGroups.add(ArtistTrackGroup(artist = artist, tracks = tracks))
-        }
-        return artistTrackGroups
-    }
-
-    private fun filterTracksByAlbum(tracks: List<Track>): List<AlbumTrackGroup> {
-        val albumTracksMap: Map<String, List<Track>> = tracks.groupBy { it.album }
-        val albumTrackGroups = mutableListOf<AlbumTrackGroup>()
-        albumTracksMap.forEach { (album, tracks) ->
-            albumTrackGroups.add(AlbumTrackGroup(album = album, tracks = tracks))
-        }
-        return albumTrackGroups
     }
 
     fun getAlbumArt(albumId: Long?, artistId: Long): Bitmap? {

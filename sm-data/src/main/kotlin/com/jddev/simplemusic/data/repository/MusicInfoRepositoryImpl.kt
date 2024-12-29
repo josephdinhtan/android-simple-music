@@ -19,8 +19,8 @@ class MusicInfoRepositoryImpl(
     private val musicInfoManager: MusicInfoManager,
 ) : MusicInfoRepository {
 
-    private val _allTracks = MutableStateFlow<List<Track>>(emptyList())
-    override val allTracks = _allTracks.asStateFlow()
+    private var _allTracks = MutableStateFlow<List<Track>>(emptyList())
+    override var allTracks = _allTracks.asStateFlow()
 
     private val _albums = MutableStateFlow<List<Album>>(emptyList())
     override val albums = _albums.asStateFlow()
@@ -33,7 +33,7 @@ class MusicInfoRepositoryImpl(
 
     override fun initializer() {
         coroutineScope.launch {
-            _allTracks.value = musicInfoManager.queryAllTracks()
+            allTracks = musicInfoManager.queryAllTracksAsync()
             _artists.value = musicInfoManager.queryArtists()
             _albums.value = musicInfoManager.queryAlbums()
         }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jddev.simplemusic.domain.model.Album
 import com.jddev.simplemusic.domain.model.Artist
@@ -18,6 +19,7 @@ import com.jddev.simplemusic.ui.components.SmBottomSheet
 @Composable
 fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel(),
+    bottomPadding: Dp,
     navigateToSettings: () -> Unit,
     onArtistGroupSelected: (Artist) -> Unit,
     onAlbumGroupSelected: (Album) -> Unit,
@@ -31,6 +33,7 @@ fun HomeRoute(
 
     Box {
         HomeScreen(
+            bottomPadding = bottomPadding,
             allTracks = allTracks.value,
             artists = artists.value,
             albums = albums.value,

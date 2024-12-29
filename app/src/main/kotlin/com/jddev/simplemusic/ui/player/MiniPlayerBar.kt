@@ -1,7 +1,6 @@
 package com.jddev.simplemusic.ui.player
 
 import android.graphics.Bitmap
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -51,59 +50,53 @@ import com.jddev.simplemusic.updatest.StUiPreview
 @Composable
 fun MiniPlayerBar(
     modifier: Modifier = Modifier,
-    track: Track?,
+    track: Track,
     getAlbumArt: (Long?, Long) -> Bitmap?,
     onTrackEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
     onBarClick: () -> Unit
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
-    AnimatedVisibility(
-        visible = track != null, modifier = modifier
-    ) {
-        if (track != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .clip(shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
-                    .pointerInput(Unit) {
-                        detectDragGestures(onDragEnd = {
-                            when {
-                                offsetX > 0 -> {
-                                    onTrackEvent(TrackEvent.SkipToPrevious)
-                                }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .clip(shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
+            .pointerInput(Unit) {
+                detectDragGestures(onDragEnd = {
+                    when {
+                        offsetX > 0 -> {
+                            onTrackEvent(TrackEvent.SkipToPrevious)
+                        }
 
-                                offsetX < 0 -> {
-                                    onTrackEvent(TrackEvent.SkipToNext)
-                                }
-                            }
-                        }, onDrag = { change, dragAmount ->
-                            change.consume()
-                            val (x, _) = dragAmount
-                            offsetX = x
-                        })
-
+                        offsetX < 0 -> {
+                            onTrackEvent(TrackEvent.SkipToNext)
+                        }
                     }
-                    .background(
-                        if (!isSystemInDarkTheme()) {
-                            Color.LightGray
-                        } else Color.DarkGray
-                    )
-                    .clickable(onClick = { onBarClick() }),
-            ) {
-                val imageBitmap = getAlbumArt(track.albumId, track.artistId)
-                BlurBackgroundImage(
-                    modifier = Modifier.fillMaxSize(), imageBitmap = imageBitmap
-                )
-                TrackBottomControllerContent(
-                    track = track,
-                    imageBitmap = imageBitmap,
-                    onEvent = onTrackEvent,
-                    playerState = playerState,
-                )
+                }, onDrag = { change, dragAmount ->
+                    change.consume()
+                    val (x, _) = dragAmount
+                    offsetX = x
+                })
+
             }
-        }
+            .background(
+                if (!isSystemInDarkTheme()) {
+                    Color.LightGray
+                } else Color.DarkGray
+            )
+            .clickable(onClick = { onBarClick() }),
+    ) {
+        val imageBitmap = getAlbumArt(track.albumId, track.artistId)
+        BlurBackgroundImage(
+            modifier = Modifier.fillMaxSize(), imageBitmap = imageBitmap
+        )
+        TrackBottomControllerContent(
+            track = track,
+            imageBitmap = imageBitmap,
+            onEvent = onTrackEvent,
+            playerState = playerState,
+        )
     }
 }
 
