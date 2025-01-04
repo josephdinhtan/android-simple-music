@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.home.album
+package com.jddev.simplemusic.ui.library.album
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

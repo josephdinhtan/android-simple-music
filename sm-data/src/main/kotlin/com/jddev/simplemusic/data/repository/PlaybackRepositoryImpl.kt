@@ -156,7 +156,7 @@ class PlaybackRepositoryImpl(val context: Context) : PlaybackRepository {
 
     override fun play(mediaId: Long) {
         if(availableTracks.isEmpty()) {
-            Timber.e("play $mediaId: forget to addMediaItems?")
+            Timber.e("play $mediaId: you may forget to addMediaItems?")
             return
         }
         val mediaItemIndex = availableTracks.indexOfFirst {

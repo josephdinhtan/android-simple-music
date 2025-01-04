@@ -1,9 +1,9 @@
-package com.jddev.simplemusic.ui.home.album
+package com.jddev.simplemusic.ui.library.artist
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jddev.simplemusic.domain.model.Album
+import com.jddev.simplemusic.domain.model.Artist
 import com.jddev.simplemusic.domain.model.Track
 import com.jddev.simplemusic.domain.repository.MusicInfoRepository
 import com.jddev.simplemusic.domain.repository.PlaybackRepository
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AlbumViewModel @Inject constructor(
+class ArtistViewModel @Inject constructor(
     private val getAlbumArtUseCase: GetAlbumArtUseCase,
     private val musicInfoRepository: MusicInfoRepository,
     private val musicControllerRepository: PlaybackRepository,
@@ -23,14 +23,14 @@ class AlbumViewModel @Inject constructor(
     private val _tracks = MutableStateFlow<List<Track>>(emptyList())
     val tracks = _tracks.asStateFlow()
 
-    private val _album = MutableStateFlow<Album?>(null)
-    val album = _album.asStateFlow()
+    private val _artist = MutableStateFlow<Artist?>(null)
+    val artist = _artist.asStateFlow()
 
-    fun queryTracksGivenAlbum(albumId: Long) {
+    fun queryTracksGivenArtist(artistId: Long) {
         _tracks.tryEmit(emptyList())
         viewModelScope.launch {
-            _album.value = musicInfoRepository.getAlbum(albumId = albumId)
-            _tracks.value = musicInfoRepository.getTrackGivenAlbumId(albumId = albumId)
+            _artist.value = musicInfoRepository.getArtist(artistId = artistId)
+            _tracks.value = musicInfoRepository.getTrackGivenArtistId(artistId = artistId)
         }
     }
 

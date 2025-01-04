@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.home.artist
+package com.jddev.simplemusic.ui.library.artist
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box

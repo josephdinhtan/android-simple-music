@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.home
+package com.jddev.simplemusic.ui.library
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +17,8 @@ import com.jddev.simplemusic.ui.components.HomeMenu
 import com.jddev.simplemusic.ui.components.SmBottomSheet
 
 @Composable
-fun HomeRoute(
-    homeViewModel: HomeViewModel = hiltViewModel(),
+fun LibraryRoute(
+    homeViewModel: LibraryViewModel = hiltViewModel(),
     bottomPadding: Dp,
     navigateToSettings: () -> Unit,
     onArtistGroupSelected: (Artist) -> Unit,
@@ -32,7 +32,7 @@ fun HomeRoute(
     var showBottomSheetMenu by remember { mutableStateOf(false) }
 
     Box {
-        HomeScreen(
+        LibraryScreen(
             bottomPadding = bottomPadding,
             allTracks = allTracks.value,
             artists = artists.value,

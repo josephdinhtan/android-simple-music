@@ -1,6 +1,8 @@
 package com.jddev.simplemusic.ui.settings
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
@@ -10,11 +12,13 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Dp
 import com.jddev.simpletouch.ui.component.StUiLargeTopAppBar
-import com.jddev.simpletouch.ui.component.StUiScrollBehavior
 import com.jddev.simpletouch.ui.settingsui.SettingsGroup
 import com.jddev.simpletouch.ui.settingsui.SettingsNavigateItem
 import com.jddev.simpletouch.ui.settingsui.SettingsSwitchItem
@@ -25,10 +29,11 @@ import com.jddev.simpletouch.ui.settingsui.UiStyle
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
+    bottomPadding: Dp,
     onThemeChange: () -> Unit,
     onBack: () -> Unit,
 ) {
-    val scrollBehavior = StUiScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -45,7 +50,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            uiStyle = UiStyle.Cupertino,
+            uiStyle = UiStyle.Material,
         ) {
             item {
                 SettingsGroup(title = "General") {
@@ -115,6 +120,9 @@ fun SettingsScreen(
                         onClick = onThemeChange,
                     )
                 }
+            }
+            item {
+                Spacer(Modifier.height(bottomPadding))
             }
         }
     }

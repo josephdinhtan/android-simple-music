@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.home
+package com.jddev.simplemusic.ui.library
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.gestures.snapping.SnapPosition
@@ -12,15 +12,14 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FlipCameraAndroid
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,24 +37,26 @@ import com.jddev.simplemusic.ui.utils.listui.SmUiList
 import com.jddev.simplemusic.ui.utils.listui.albumTrackGroupsToSmItemList
 import com.jddev.simplemusic.ui.utils.listui.artistTrackGroupsToSmItemList
 import com.jddev.simplemusic.ui.utils.listui.trackGroupsToSmItemList
+import com.jddev.simpletouch.ui.component.StUiScrollBehavior
 import com.jddev.simpletouch.ui.component.StUiTopAppBar
 import com.jddev.simpletouch.ui.theme.StUiTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalMaterial3Api::class)
 private val musicCategory = mutableListOf(
-    HomeFragmentItem("Tracks", content = { Text("Tracks") }),
-    HomeFragmentItem("Artists", content = { Text("Artists") }),
-    HomeFragmentItem("Albums", content = { Text("Albums") }),
-    HomeFragmentItem("Favorites", content = { Text("Favorites") }),
-    HomeFragmentItem("Playlists", content = { Text("Playlists") }),
-    HomeFragmentItem("Genres", content = { Text("Genres") }),
+    LibraryItem("Tracks", content = { _, _ -> Text("Tracks") }),
+    LibraryItem("Artists", content = { _, _ -> Text("Artists") }),
+    LibraryItem("Albums", content = { _, _ -> Text("Albums") }),
+    LibraryItem("Favorites", content = { _, _ -> Text("Favorites") }),
+    LibraryItem("Playlists", content = { _, _ -> Text("Playlists") }),
+    LibraryItem("Genres", content = { _, _ -> Text("Genres") }),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun LibraryScreen(
     modifier: Modifier = Modifier,
     bottomPadding: Dp = 0.dp,
     allTracks: List<Track>,
@@ -68,37 +69,40 @@ fun HomeScreen(
     navigateToSettings: () -> Unit,
     requestScanDevice: () -> Unit,
 ) {
-    musicCategory[0] = HomeFragmentItem("Tracks", content = {
+    musicCategory[0] = LibraryItem("Tracks", content = { scrollBehavior, bottomPadding ->
         SmUiList(modifier = Modifier.fillMaxSize(),
+            scrollBehavior = scrollBehavior,
+            bottomPadding = bottomPadding,
             smListData = trackGroupsToSmItemList(allTracks),
             getAlbumArt = getAlbumArt,
             onItemIndexSelected = { index -> onTrackSelected(allTracks[index]) })
     })
-    musicCategory[1] = HomeFragmentItem("Artists", content = {
+    musicCategory[1] = LibraryItem("Artists", content = { scrollBehavior, bottomPadding ->
         SmUiList(modifier = Modifier.fillMaxSize(),
+            scrollBehavior = scrollBehavior,
+            bottomPadding = bottomPadding,
             smListData = artistTrackGroupsToSmItemList(artists),
             getAlbumArt = getAlbumArt,
             onItemIndexSelected = { index -> onArtistGroupSelected(artists[index]) })
     })
-    musicCategory[2] = HomeFragmentItem("Albums", content = {
+    musicCategory[2] = LibraryItem("Albums", content = { scrollBehavior, bottomPadding ->
         SmUiList(modifier = Modifier.fillMaxSize(),
+            scrollBehavior = scrollBehavior,
+            bottomPadding = bottomPadding,
             smListData = albumTrackGroupsToSmItemList(albums),
             getAlbumArt = getAlbumArt,
             onItemIndexSelected = { index -> onAlbumGroupSelected(albums[index]) })
     })
+
+    val scrollBehavior = StUiScrollBehavior()
     Scaffold(
         modifier = modifier,
         topBar = {
             StUiTopAppBar(
                 modifier = modifier,
+                scrollBehavior = scrollBehavior,
                 title = "Simple Music",
                 actions = {
-                    IconButton(onClick = requestScanDevice) {
-                        Icon(Icons.Default.FlipCameraAndroid, "reload")
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(Icons.Outlined.Search, "Search")
-                    }
                     IconButton(onClick = navigateToSettings) {
                         Icon(Icons.Default.MoreVert, "More options")
                     }
@@ -110,17 +114,20 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
+            scrollBehavior = scrollBehavior,
             contents = musicCategory,
             bottomPadding = bottomPadding,
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeContent(
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     bottomPadding: Dp,
-    contents: List<HomeFragmentItem>,
+    contents: List<LibraryItem>,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
     Column(
@@ -188,9 +195,10 @@ private fun HomeContent(
             pageSize = PageSize.Fill,
         ) { page ->
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = bottomPadding),
+                modifier = Modifier
+                    .fillMaxSize(),
             ) {
-                contents[page].content()
+                contents[page].content(scrollBehavior, bottomPadding)
             }
         }
     }
@@ -200,7 +208,7 @@ private fun HomeContent(
 @Composable
 private fun Preview() {
     StUiTheme {
-        HomeScreen(
+        LibraryScreen(
             allTracks = listOf(),
             navigateToSettings = {},
             onTrackSelected = {},

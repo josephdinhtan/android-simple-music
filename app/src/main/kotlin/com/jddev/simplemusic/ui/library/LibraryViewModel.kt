@@ -1,4 +1,4 @@
-package com.jddev.simplemusic.ui.home
+package com.jddev.simplemusic.ui.library
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -20,7 +20,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class LibraryViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val getAllTrackUseCase: GetAllTrackUseCase,
     private val getAlbumsUseCase: GetAlbumsUseCase,

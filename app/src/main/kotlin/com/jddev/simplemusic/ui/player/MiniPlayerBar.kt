@@ -7,11 +7,11 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jddev.simplemusic.R
 import com.jddev.simplemusic.domain.model.PlayerState
@@ -50,7 +52,9 @@ import com.jddev.simplemusic.updatest.StUiPreview
 @Composable
 fun MiniPlayerBar(
     modifier: Modifier = Modifier,
+    fixHeight: Dp = 54.dp,
     track: Track,
+    shape: Shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 16.dp),
     getAlbumArt: (Long?, Long) -> Bitmap?,
     onTrackEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
@@ -60,8 +64,11 @@ fun MiniPlayerBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(64.dp)
-            .clip(shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
+            .padding(horizontal = 16.dp)
+            .height(fixHeight)
+            .clip(shape = shape)
+            .background(Color.Transparent)
+            .clickable(onClick = { onBarClick() })
             .pointerInput(Unit) {
                 detectDragGestures(onDragEnd = {
                     when {
@@ -78,14 +85,7 @@ fun MiniPlayerBar(
                     val (x, _) = dragAmount
                     offsetX = x
                 })
-
-            }
-            .background(
-                if (!isSystemInDarkTheme()) {
-                    Color.LightGray
-                } else Color.DarkGray
-            )
-            .clickable(onClick = { onBarClick() }),
+            },
     ) {
         val imageBitmap = getAlbumArt(track.albumId, track.artistId)
         BlurBackgroundImage(
@@ -103,7 +103,9 @@ fun MiniPlayerBar(
 
 @Composable
 private fun TrackBottomControllerContent(
+    fixHeight: Dp = 54.dp,
     track: Track,
+    imageShape: Shape = MaterialTheme.shapes.medium,
     imageBitmap: Bitmap?,
     onEvent: (TrackEvent) -> Unit,
     playerState: PlayerState?,
@@ -115,9 +117,10 @@ private fun TrackBottomControllerContent(
     ) {
         ThumbnailImage(
             modifier = Modifier
-                .size(64.dp)
+                .aspectRatio(1f)
                 .padding(start = 16.dp)
                 .padding(vertical = 8.dp),
+            shape = imageShape,
             imageBitmap = imageBitmap
         )
         Column(
@@ -163,9 +166,9 @@ private fun TrackBottomControllerContent(
         Image(
             painter = painter,
             contentDescription = "Music",
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 8.dp)
                 .size(48.dp)
                 .clickable(
                     interactionSource = remember {
