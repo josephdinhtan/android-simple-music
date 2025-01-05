@@ -2,9 +2,9 @@ package com.jddev.simplemusic.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LibraryMusic
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -40,17 +40,17 @@ enum class TopLevelDestination(
     Timeline(
         route = NvRoute.LibraryHome,
         label = R.string.library,
-        imageVector = Icons.Outlined.LibraryMusic,
+        imageVector = Icons.Filled.LibraryMusic,
     ),
     ChatsList(
         route = NvRoute.Search,
         label = R.string.search,
-        imageVector = Icons.Outlined.Search,
+        imageVector = Icons.Filled.Search,
     ),
     Settings(
         route = NvRoute.Settings,
         label = R.string.settings,
-        imageVector = Icons.Outlined.Settings,
+        imageVector = Icons.Filled.Settings,
     ),
     ;
 

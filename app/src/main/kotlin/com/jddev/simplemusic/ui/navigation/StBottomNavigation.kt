@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItemColors
@@ -36,7 +37,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
-private fun Color.Companion.orange() = Color(0xFFE39300)
+private fun Color.Companion.orange() = Color(0xFFF18E00)
+private fun Color.Companion.gray() = Color(0xFFC2C2C2)
 
 @Composable
 fun StBottomNavigation(
@@ -50,6 +52,8 @@ fun StBottomNavigation(
     Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
         Column(Modifier.fillMaxSize()) {
             Column(Modifier.weight(1f)) { content() }
+            HorizontalDivider()
+            //Box(Modifier.height(2.dp).fillMaxWidth().background(Color.Green))
             Row(
                 modifier = Modifier
                     .height(54.dp)
@@ -84,7 +88,12 @@ private fun RowScope.StNavigationBarItem(
     label: @Composable (() -> Unit)? = null,
     alwaysShowLabel: Boolean = true,
     colors: NavigationBarItemColors = NavigationBarItemDefaults.colors()
-        .copy(selectedIconColor = Color.orange(), selectedTextColor = Color.orange()),
+        .copy(
+            selectedIconColor = Color.orange(),
+            selectedTextColor = Color.orange(),
+            unselectedIconColor = Color.gray(),
+            unselectedTextColor = Color.gray(),
+        ),
     interactionSource: MutableInteractionSource? = null
 ) {
     var itemWidth by remember { mutableIntStateOf(0) }
@@ -112,7 +121,12 @@ private fun RowScope.StNavigationBarItem(
             verticalArrangement = Arrangement.Center
         ) {
             CompositionLocalProvider(LocalContentColor provides iconColor, content = icon)
-            label?.let { CompositionLocalProvider(LocalContentColor provides iconColor, content = it) }
+            label?.let {
+                CompositionLocalProvider(
+                    LocalContentColor provides iconColor,
+                    content = it
+                )
+            }
         }
     }
 }

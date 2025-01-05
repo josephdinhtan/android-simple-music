@@ -64,7 +64,6 @@ fun MiniPlayerBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .height(fixHeight)
             .clip(shape = shape)
             .background(Color.Transparent)

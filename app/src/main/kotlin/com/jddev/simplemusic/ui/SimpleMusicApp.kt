@@ -9,7 +9,9 @@ import com.jddev.simpletouch.ui.theme.StUiTheme
 
 @Composable
 fun SimpleMusicApp(appContainer: AppContainer) {
-    StUiTheme {
+    StUiTheme (
+        darkTheme = false
+    ) {
         val navController = rememberNavController()
         SmBottomNavigation(navController = navController) {
             HomeNavGraph(
